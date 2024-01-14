@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ManaPoolSpell.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">ManaPoolSpell.java</span></div><h1>ManaPoolSpell.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import processing.core.PApplet;
+
+public class ManaPoolSpell extends GameplayActions {    
+    private Shape show_cost;
+    private boolean was_selected;
+    private int cost;
+
+    public ManaPoolSpell(int cost) {
+<span class="fc" id="L11">        super(360, 'm', &quot;M &quot;, &quot;Mana pool\ncost: &quot; + cost);</span>
+<span class="fc" id="L12">        this.cost = (int)cost;</span>
+<span class="fc" id="L13">        show_cost = new Shape(585, y+2, 52, 18, COSTBOX, COSTBOX);</span>
+<span class="fc" id="L14">    }</span>
+    
+    /**
+     * Allows user to change the current cost of the mana pool spell
+     * @param cost amount to change cost to, must be positive value
+     */
+    public void updateCost(int cost) {
+<span class="nc bnc" id="L21" title="All 2 branches missed.">        if (cost &gt; 0) {</span>
+<span class="nc" id="L22">            this.cost = cost;</span>
+<span class="nc" id="L23">            sub_text = &quot;Mana pool\ncost: &quot; + cost;</span>
+        }
+<span class="nc" id="L25">    }</span>
+
+    /**
+     * Overrides the superclass GameplayActions method and is used to change the previous selected state of the button rather than the current state of the button, and is
+     * invoked by a Mana instance after the button is pressed. Used to prevent mana value from changing when player unselects the button.
+     */
+    public void setSelected() {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (was_selected) {</span>
+<span class="nc" id="L33">            was_selected = false;</span>
+        }
+        else {
+<span class="nc" id="L36">            was_selected = true;</span>
+        }
+<span class="nc" id="L38">    }</span>
+
+    /**
+     * Retrieves the previous state of the button. Invoked by Mana instance to prevent undesired change in mana amount and mana pool spell cost when the player unselects the button.
+     * @return true if button was previously pressed, false otherwise
+     */
+    public boolean wasSelected() {
+<span class="nc" id="L45">        return was_selected;</span>
+    }
+
+    /**
+     * Logic for changing the previous selected state of the button to false.
+     * When the button is unselected and was previously selected, the previous selected state is set to false.
+     * Also displays the cost of the mana pool spell when mouse hovers over the button.
+     * @param app that invokes the subclass
+     */
+    public void tick(PApplet app) {
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">        if (!selected &amp;&amp; was_selected) {</span>
+<span class="nc" id="L56">            was_selected = false;</span>
+        }
+<span class="fc" id="L58">        showCost(app, show_cost, cost);</span>
+<span class="fc" id="L59">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

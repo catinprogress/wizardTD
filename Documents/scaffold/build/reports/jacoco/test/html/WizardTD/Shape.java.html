@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Shape.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">Shape.java</span></div><h1>Shape.java</h1><pre class="source lang-java linenums">package WizardTD;
+import processing.core.PApplet;
+
+
+public class Shape {
+    protected float x;
+    protected float y;
+    
+    protected float total_width;
+    protected float height;
+    protected float external_width;
+    
+    protected boolean has_stroke;
+
+    protected int[] external_colour;
+    protected int[] fill_colour;
+
+<span class="fc" id="L18">    public Shape(float x, float y, float width, float height, int[] external_colour, int[] fill_colour) {</span>
+<span class="fc" id="L19">        this.x = x;</span>
+<span class="fc" id="L20">        this.y = y;</span>
+<span class="fc" id="L21">        total_width = width;</span>
+<span class="fc" id="L22">        this.height = height;</span>
+<span class="fc" id="L23">        external_width = width;</span>
+<span class="fc" id="L24">        this.has_stroke = true;</span>
+<span class="fc" id="L25">        this.external_colour = external_colour;</span>
+<span class="fc" id="L26">        this.fill_colour = fill_colour;</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * Retrieves the x coordinate of the shape from the leftmost edge.
+     * @return x
+     */
+    public float getX() {
+<span class="fc" id="L34">        return x;</span>
+    }
+
+    /**
+     * Retrieves the y coordinate of the shape from the topmost edge.
+     * @return y
+     */
+    public float getY() {
+<span class="fc" id="L42">        return y;</span>
+    }
+
+    /**
+     * Allows the user to change the current y coordinate of the shape, given that it is a non-negative value and less than or equal to the height of the screen.
+     * @param new_y
+     */
+    public void setY(float new_y) {
+<span class="pc bpc" id="L50" title="2 of 4 branches missed.">        if (new_y &gt;= 0 &amp;&amp; new_y &lt;= App.HEIGHT) {</span>
+<span class="fc" id="L51">            y = new_y;</span>
+        }
+<span class="fc" id="L53">    }</span>
+
+    /**
+     * Allows the user to change the height of the shape given that the new height value is a positive number
+     * @param new_height of shape
+     */
+    public void setHeight(float new_height) {
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if (new_height &gt; 0) {</span>
+<span class="fc" id="L61">            height = new_height;</span>
+        }
+<span class="fc" id="L63">    }</span>
+
+    /**
+     * Retrieves the current height of the shape
+     * @return height
+     */
+    public float getHeight() {
+<span class="fc" id="L70">        return height;</span>
+    }
+
+    /**
+     * Renders a rectangle on screen with two layers of colour, the background fill colour is initially set to be completely covered by the external colour layer.
+     * Used to indicate the proportion of some entity, like a monster's health or the current mana.
+     * Can also be used for shapes that switch between different states, such as button clicks.
+     * @param app
+     */
+    //render the rectangular shape on screen, with background fill colour behind the external colour
+    public void drawRectangle(PApplet app) {
+<span class="fc" id="L81">        app.stroke(0, 0, 0);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (!has_stroke) {</span>
+<span class="fc" id="L83">            app.noStroke();</span>
+        }
+<span class="fc" id="L85">        app.fill(fill_colour[0], fill_colour[1], fill_colour[2]);</span>
+<span class="fc" id="L86">        app.rect(x, y, total_width, height); //background rectangle</span>
+
+<span class="fc" id="L88">        app.fill(external_colour[0], external_colour[1], external_colour[2]);</span>
+<span class="fc" id="L89">        app.rect(x, y, external_width, height); //external rectangnle</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Decreases the current width of the external layer of colour by a desired proportion
+     * @param decrement_proportion the proportion to decrease the external colour layer by
+     */
+    public void decreaseExternalWidth(double decrement_proportion) {
+<span class="fc" id="L97">        float width_decrement = (float)(external_width - (decrement_proportion*total_width));</span>
+        
+<span class="pc bpc" id="L99" title="2 of 4 branches missed.">        if (external_width &gt;= 0 &amp;&amp; (width_decrement &lt; total_width)) {</span>
+<span class="fc" id="L100">            external_width = width_decrement;</span>
+        }
+<span class="fc" id="L102">    }</span>
+    
+    /**
+     * Increases the current width of the external layer of colour by a desired proportion.
+     * @param increment_proportion the proportion to increase the external colour layer by
+     */
+    public void increaseExternalWidth(double increment_proportion) {
+<span class="fc" id="L109">        float width_increment = (float)((increment_proportion*total_width)+external_width);</span>
+<span class="pc bpc" id="L110" title="2 of 4 branches missed.">        if (external_width &gt;= 0 &amp;&amp; (width_increment &lt;= total_width)) {</span>
+<span class="fc" id="L111">            external_width = width_increment;</span>
+        }
+<span class="fc" id="L113">    }</span>
+
+    /**
+     * Allows the user to input a set proportion of which the external layer of colour fills the shape relative to the total width of the shape
+     * @param proportion the desired proportion of the width of the external layer colour in comparason to the total width of the shape
+     */
+    public void setExternalWidth(double proportion) {
+<span class="fc" id="L120">        float width_decrement = (float)((proportion)*external_width);</span>
+        
+<span class="pc bpc" id="L122" title="1 of 4 branches missed.">        if (external_width &gt; 0 &amp;&amp; (width_decrement &lt;= total_width)) {</span>
+<span class="fc" id="L123">            external_width = width_decrement;</span>
+        }
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * Allows the user to change the colour of the outer layer of the shape
+     * @param rgb an int array of length 3, where the values correspond to R, G, B values
+     */
+    public void setExternalColour(int[] rgb) {
+<span class="nc" id="L132">        external_colour = rgb;</span>
+<span class="nc" id="L133">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

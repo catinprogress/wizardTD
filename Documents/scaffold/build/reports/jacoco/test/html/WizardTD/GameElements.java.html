@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameElements.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">GameElements.java</span></div><h1>GameElements.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.Scanner;
+
+import processing.data.JSONArray;
+import processing.data.JSONObject;
+
+public abstract class GameElements implements Cloneable{
+    public static final int PIXELSPERTILE = 32;
+    public static final int BOARD_WIDTH = 20;
+    public static final int FPS = 60;
+    protected JSONObject json;
+    protected Random random;
+
+<span class="fc" id="L20">    public GameElements (JSONObject json) {</span>
+<span class="fc" id="L21">        this.json = json;</span>
+<span class="fc" id="L22">        random = new Random();</span>
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Retrieves the wave JSONObject in the given game config file at a given wave number
+     * @param waves JSONArray of all waves in the game
+     * @param wave_num wave number to consider
+     * @return the current wave
+     */
+    protected JSONObject getCurrentWave(JSONArray waves, int wave_num) {      
+<span class="pc bpc" id="L32" title="2 of 4 branches missed.">        if (wave_num &gt; waves.size() || wave_num &lt; 1) {</span>
+<span class="nc" id="L33">            System.err.println(&quot;Invalid wave number!&quot;);</span>
+<span class="nc" id="L34">            System.exit(1);</span>
+        }
+
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (!(waves.get(wave_num-1) instanceof JSONObject)) {</span>
+<span class="nc" id="L38">            System.err.println(&quot;Wave number is not of type JSONObject!&quot;);</span>
+        }
+
+<span class="fc" id="L41">        return waves.getJSONObject(wave_num-1);    </span>
+    }
+
+    /**
+     * Retrieves the name of the monster types to spawn for the current wave and stores them in an ArrayList
+     * @param monsters JSONArray of all monster objects for a given wave
+     * @return types
+     */
+    protected ArrayList&lt;String&gt; getMonsterTypes(JSONArray monsters) {
+<span class="fc" id="L50">        ArrayList&lt;String&gt; types = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (int i = 0; i &lt; monsters.size(); i++) {</span>
+            try {
+<span class="fc" id="L54">                JSONObject current = monsters.getJSONObject(i);</span>
+<span class="fc" id="L55">                types.add(current.getString(&quot;type&quot;));</span>
+            }
+<span class="nc" id="L57">            catch (RuntimeException e) {</span>
+<span class="nc" id="L58">                System.err.println(&quot;No monsters exist for wave &quot; + (i+1) + &quot;!&quot;);</span>
+<span class="fc" id="L59">            }</span>
+        }
+<span class="fc" id="L61">        return types;</span>
+    }
+
+    /**
+     * Retrieves the total number of monsters to spawn for a given wave
+     * @param monsters JSONArray of all monter objects for a given wave
+     * @return total_monsters
+     */
+    protected int getTotalMonsters(JSONArray monsters) {
+<span class="fc" id="L70">        int total_monsters = 0;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (int i = 0; i &lt; monsters.size(); i++) {</span>
+            try {
+<span class="fc" id="L73">                JSONObject current = monsters.getJSONObject(i);</span>
+<span class="fc" id="L74">                total_monsters += current.getInt(&quot;quantity&quot;);</span>
+            }
+<span class="nc" id="L76">            catch (RuntimeException e) {</span>
+<span class="nc" id="L77">                System.err.println(&quot;Key: 'quantity' doesn't exist, or value is not an integer!&quot;);</span>
+<span class="fc" id="L78">            }</span>
+        }
+
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (total_monsters &lt;= 0) {</span>
+<span class="nc" id="L82">            System.err.println(&quot;No monsters to spawn for this wave!&quot;);</span>
+        }
+
+<span class="fc" id="L85">        return total_monsters;</span>
+    }
+    
+    /**
+     * Reads a JSONObject to check if it contains a JSONArray object that maps to a given key
+     * @param object the JSONObject to retrieve from
+     * @param key String that indicates the key value of the array object
+     * @return the JSONArray
+     */
+    protected JSONArray readJSONArray(JSONObject object, String key) {
+<span class="fc" id="L95">        JSONArray arr = null;</span>
+        try {
+<span class="fc" id="L97">            arr = object.getJSONArray(key);</span>
+        }
+<span class="nc" id="L99">        catch (RuntimeException e) {</span>
+<span class="nc" id="L100">            System.err.println(&quot;Key: &quot; + key + &quot; does not exist, or value is not a JSONArray!&quot;);</span>
+<span class="fc" id="L101">        }</span>
+
+<span class="pc bpc" id="L103" title="2 of 4 branches missed.">        if (arr == null || arr.size() &lt;= 0) {</span>
+<span class="nc" id="L104">            System.err.println(key + &quot; JSONArray cannot be read&quot;);</span>
+        }
+        
+<span class="fc" id="L107">        return arr;</span>
+    }
+
+    /**
+     * Creates a hashamp that maps the index of a given monster type in a JSONArray of all monsters for a given wave to it's type as a String
+     * @param monsters JSONArray for a given wave
+     * @return indexes
+     */
+    private HashMap&lt;String, Integer&gt; indexOfMonsterType(JSONArray monsters) {
+<span class="fc" id="L116">        HashMap&lt;String, Integer&gt; indexes = new HashMap&lt;&gt;();</span>
+        
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (int i = 0; i &lt; monsters.size(); i++) {</span>
+            try {
+<span class="fc" id="L120">                JSONObject current = monsters.getJSONObject(i);</span>
+<span class="fc" id="L121">                String type = current.getString(&quot;type&quot;);</span>
+<span class="fc" id="L122">                indexes.put(type, i);</span>
+            }
+<span class="nc" id="L124">            catch (RuntimeException e) {</span>
+<span class="nc" id="L125">                System.err.println(&quot;Key 'type' for monsters JSONArray  doesn't exist!&quot;);</span>
+<span class="fc" id="L126">            }</span>
+        }
+
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (indexes.size() == 0) {</span>
+<span class="nc" id="L130">            System.err.println(&quot;No monster types exist for this wave!&quot;);</span>
+        }
+
+<span class="fc" id="L133">        return indexes;</span>
+    }
+
+    /**
+     * Reads the value of the specified monster attribute from the JSONObject config file
+     * @param current_wave JSONObject of current wave to read
+     * @param type String indicating the type of the monster
+     * @param key String indicating the attribute to retrieve the value from 
+     * @return value
+     */
+    protected double setMonsterAttribute(JSONObject current_wave, String type, String key) {
+<span class="fc" id="L144">        JSONArray monsters = readJSONArray(current_wave, &quot;monsters&quot;);</span>
+<span class="fc" id="L145">        HashMap&lt;String, Integer&gt; indexes = indexOfMonsterType(monsters);</span>
+
+<span class="fc" id="L147">        double value = -1;</span>
+
+        try {
+<span class="fc" id="L150">            JSONObject monster = monsters.getJSONObject(indexes.get(type));</span>
+<span class="fc" id="L151">            value = monster.getDouble(key);</span>
+        }
+<span class="nc" id="L153">        catch (RuntimeException e) {</span>
+<span class="nc" id="L154">            System.err.println(&quot;Key: &quot; + key + &quot; doesn't exist, or value is not numeric!&quot;);</span>
+<span class="fc" id="L155">        }</span>
+
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (value &lt;= 0) {</span>
+<span class="nc" id="L158">            System.err.println(&quot;Initial &quot; + key + &quot; cannot be less than or equal 0!&quot;);</span>
+        }
+<span class="fc" id="L160">        return value;</span>
+    }
+
+    /**
+     * Retrieves the layout of map for the current level provided in the config JSONObject and stores each row as a String in an ArrayList
+     * @return lines_in_file
+     */
+    protected ArrayList&lt;String&gt; getMap() {
+<span class="fc" id="L168">        File map_file = new File(json.getString(&quot;layout&quot;));</span>
+<span class="fc" id="L169">        ArrayList&lt;String&gt; lines_in_file = new ArrayList&lt;String&gt;();</span>
+
+        try {
+<span class="fc" id="L172">            Scanner scan = new Scanner(map_file);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            while (scan.hasNextLine()) {</span>
+<span class="fc" id="L174">                String line = scan.nextLine();</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">                while (line.length() != BOARD_WIDTH) {</span>
+<span class="fc" id="L176">                    line += &quot; &quot;;</span>
+                }
+<span class="fc" id="L178">                lines_in_file.add(line);</span>
+<span class="fc" id="L179">            }</span>
+<span class="fc" id="L180">            scan.close();         </span>
+<span class="nc" id="L181">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L182">            System.err.println(&quot;File not found!&quot;);</span>
+<span class="fc" id="L183">        }</span>
+            
+<span class="fc" id="L185">        return lines_in_file;</span>
+    }
+
+    /**
+     * Reads and retrieves a numeric value from a given JSONObject key
+     * @param key String indicating the value to retrieve from
+     * @param obj the JSONObject to read
+     * @return amount
+     */
+    public static double getNumericAmount(String key, JSONObject obj) {
+<span class="fc" id="L195">        double amount = -1;</span>
+        try{
+<span class="fc" id="L197">            amount = obj.getDouble(key);</span>
+        }
+<span class="nc" id="L199">        catch(RuntimeException e) {</span>
+<span class="nc" id="L200">            System.err.println(&quot;Key: '&quot; + key + &quot;' does not exist, or value is not numeric!&quot;);</span>
+<span class="fc" id="L201">        }</span>
+
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        if (amount &lt;= 0) {</span>
+<span class="nc" id="L204">            System.err.println(&quot;The initial amount cannot be less than or equal to 0&quot;);</span>
+        }
+
+<span class="fc" id="L207">        return amount;</span>
+    }
+
+    /**
+     * Finds the distance between two points on the screen
+     * @param start_x initial x coordinate
+     * @param start_y initial y coordinate
+     * @param end_x destination x coordinate
+     * @param end_y destination y coordinate
+     * @return distance
+     */
+    public static double findDistanceBetweenTwoPoints(float start_x, float start_y, float end_x, float end_y) {
+<span class="fc" id="L219">        float x_dist = Math.abs(start_x - end_x);</span>
+<span class="fc" id="L220">        float y_dist = Math.abs(start_y - end_y);</span>
+<span class="fc" id="L221">        double distance = Math.hypot(x_dist, y_dist);</span>
+
+<span class="fc" id="L223">        return distance;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.BuildTowerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2023-10-24T23:39:38" hostname="LAPTOP-VNK73J89" time="10.209">
+  <properties/>
+  <testcase name="testCreateNewTowerInvalidCoords()" classname="WizardTD.BuildTowerTest" time="1.779"/>
+  <testcase name="testConstruction()" classname="WizardTD.BuildTowerTest" time="1.208"/>
+  <testcase name="testCorrectTowerCost()" classname="WizardTD.BuildTowerTest" time="1.182"/>
+  <testcase name="testPurchasingTowerWithUpgrades()" classname="WizardTD.BuildTowerTest" time="1.282"/>
+  <testcase name="testUpgradePurchasedTowers()" classname="WizardTD.BuildTowerTest" time="1.183"/>
+  <testcase name="testPurchasingTowerCost()" classname="WizardTD.BuildTowerTest" time="1.185"/>
+  <testcase name="testCreateNewTower()" classname="WizardTD.BuildTowerTest" time="1.189"/>
+  <testcase name="testPurchasingTowerUsedLocation()" classname="WizardTD.BuildTowerTest" time="1.175"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

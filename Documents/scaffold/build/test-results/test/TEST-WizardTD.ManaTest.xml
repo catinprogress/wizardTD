@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.ManaTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-10-24T23:40:19" hostname="LAPTOP-VNK73J89" time="11.397">
+  <properties/>
+  <testcase name="testCorrectInitialManaCap()" classname="WizardTD.ManaTest" time="1.259"/>
+  <testcase name="testCorrectInitialMana()" classname="WizardTD.ManaTest" time="1.284"/>
+  <testcase name="testIncreaseMana()" classname="WizardTD.ManaTest" time="1.246"/>
+  <testcase name="testConstruction()" classname="WizardTD.ManaTest" time="1.229"/>
+  <testcase name="testDecreaseManaToBelowZero()" classname="WizardTD.ManaTest" time="1.294"/>
+  <testcase name="testIncreaseManaBeyondManaCap()" classname="WizardTD.ManaTest" time="1.265"/>
+  <testcase name="testDecreaseManaToZeroInvalid()" classname="WizardTD.ManaTest" time="1.257"/>
+  <testcase name="testDecreaseMana()" classname="WizardTD.ManaTest" time="1.252"/>
+  <testcase name="testDecreaseManaMinimumValue()" classname="WizardTD.ManaTest" time="1.291"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

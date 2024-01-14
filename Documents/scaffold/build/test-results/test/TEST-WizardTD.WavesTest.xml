@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.WavesTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2023-10-24T23:46:00" hostname="LAPTOP-VNK73J89" time="19.932">
+  <properties/>
+  <testcase name="testPauseNotSelected()" classname="WizardTD.WavesTest" time="1.491"/>
+  <testcase name="testWin()" classname="WizardTD.WavesTest" time="1.622"/>
+  <testcase name="testRemovingKilledMonsters()" classname="WizardTD.WavesTest" time="1.37"/>
+  <testcase name="testMonstersToSpawn()" classname="WizardTD.WavesTest" time="1.352"/>
+  <testcase name="testNoNewWaveAfterFinalWave()" classname="WizardTD.WavesTest" time="1.37"/>
+  <testcase name="testConstruction()" classname="WizardTD.WavesTest" time="1.361"/>
+  <testcase name="testFastForwardNotSelected()" classname="WizardTD.WavesTest" time="1.173"/>
+  <testcase name="testPauseUnselected()" classname="WizardTD.WavesTest" time="1.417"/>
+  <testcase name="testFastForwardSelected()" classname="WizardTD.WavesTest" time="1.429"/>
+  <testcase name="testFastForwardUnselected()" classname="WizardTD.WavesTest" time="1.463"/>
+  <testcase name="testPauseSelected()" classname="WizardTD.WavesTest" time="1.422"/>
+  <testcase name="testFramesPerSpawn()" classname="WizardTD.WavesTest" time="1.458"/>
+  <testcase name="testNewWave()" classname="WizardTD.WavesTest" time="1.454"/>
+  <testcase name="testRandomMonsterSpawn()" classname="WizardTD.WavesTest" time="1.519"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

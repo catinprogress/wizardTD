@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.ButtonsTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2023-10-24T23:39:50" hostname="LAPTOP-VNK73J89" time="0.078">
+  <properties/>
+  <testcase name="testUpgradeRangeSelected()" classname="WizardTD.ButtonsTest" time="0.004"/>
+  <testcase name="testSetSelected()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testFastForwardKey()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testManaPoolSpellSelected()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testUpgradeRangeKey()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testManaPoolSpellConstruction()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testUpgradeDamageSelected()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testFastForwardConstruction()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testMouseClicked()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testUpgradeDamagKey()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testUpgradeDamageConstruction()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testUpgradeSpeedKey()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testUpgradeSpeedConstruction()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testFastForwardSelected()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testUpgradeSpeedSelected()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testManaPoolSpellKey()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testPauseSelected()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testSetKeyWasPressed()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testPauseConstruction()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testKeyPressRange()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <testcase name="testUpgradeRangeConstruction()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testPauseKey()" classname="WizardTD.ButtonsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathFinding.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">PathFinding.java</span></div><h1>PathFinding.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import java.util.*;
+//source: https://gamedev.stackexchange.com/questions/197165/java-simple-2d-grid-pathfinding
+//find the shortest paths on a 2d grid
+<span class="nc" id="L6">public abstract class PathFinding {</span>
+    public static class Point {
+        public int x;
+        public int y;
+        public Point previous;
+
+<span class="fc" id="L12">        public Point(int x, int y, Point previous) {</span>
+<span class="fc" id="L13">            this.x = x;</span>
+<span class="fc" id="L14">            this.y = y;</span>
+<span class="fc" id="L15">            this.previous = previous;</span>
+<span class="fc" id="L16">        }</span>
+
+        @Override
+<span class="nc" id="L19">        public String toString() { return String.format(&quot;(%d, %d)&quot;, x, y); }</span>
+
+        @Override
+        public boolean equals(Object o) {
+<span class="fc" id="L23">            Point point = (Point) o;</span>
+<span class="fc bfc" id="L24" title="All 4 branches covered.">            return x == point.x &amp;&amp; y == point.y;</span>
+        }
+
+        @Override
+<span class="nc" id="L28">        public int hashCode() { return Objects.hash(x, y); }</span>
+
+<span class="fc" id="L30">        public Point offset(int ox, int oy) { return new Point(x + ox, y + oy, this);  }</span>
+    }
+
+    public static boolean IsWalkable(int[][] map, Point point) {
+<span class="fc bfc" id="L34" title="All 4 branches covered.">        if (point.y &lt; 0 || point.y &gt; map.length - 1) return false;</span>
+<span class="pc bpc" id="L35" title="1 of 4 branches missed.">        if (point.x &lt; 0 || point.x &gt; map[0].length - 1) return false;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        return map[point.y][point.x] == 0;</span>
+    }
+
+    public static List&lt;Point&gt; FindNeighbors(int[][] map, Point point) {
+<span class="fc" id="L40">        List&lt;Point&gt; neighbors = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L41">        Point up = point.offset(0,  1);</span>
+<span class="fc" id="L42">        Point down = point.offset(0,  -1);</span>
+<span class="fc" id="L43">        Point left = point.offset(-1, 0);</span>
+<span class="fc" id="L44">        Point right = point.offset(1, 0);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (IsWalkable(map, up)) neighbors.add(up);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (IsWalkable(map, down)) neighbors.add(down);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (IsWalkable(map, left)) neighbors.add(left);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (IsWalkable(map, right)) neighbors.add(right);</span>
+<span class="fc" id="L49">        return neighbors;</span>
+    }
+
+    public static List&lt;Point&gt; FindPath(int[][] map, Point start, Point end) {
+<span class="fc" id="L53">        boolean finished = false;</span>
+<span class="fc" id="L54">        List&lt;Point&gt; used = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L55">        used.add(start);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        while (!finished) {</span>
+<span class="fc" id="L57">            List&lt;Point&gt; newOpen = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            for(int i = 0; i &lt; used.size(); ++i){</span>
+<span class="fc" id="L59">                Point point = used.get(i);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                for (Point neighbor : FindNeighbors(map, point)) {</span>
+<span class="fc bfc" id="L61" title="All 4 branches covered.">                    if (!used.contains(neighbor) &amp;&amp; !newOpen.contains(neighbor)) {</span>
+<span class="fc" id="L62">                        newOpen.add(neighbor);</span>
+                    }
+<span class="fc" id="L64">                }</span>
+            }
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            for(Point point : newOpen) {</span>
+<span class="fc" id="L68">                used.add(point);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">                if (end.equals(point)) {</span>
+<span class="fc" id="L70">                    finished = true;</span>
+<span class="fc" id="L71">                    break;</span>
+                }
+<span class="fc" id="L73">            }</span>
+
+<span class="pc bpc" id="L75" title="1 of 4 branches missed.">            if (!finished &amp;&amp; newOpen.isEmpty())</span>
+<span class="nc" id="L76">                return null;</span>
+<span class="fc" id="L77">        }</span>
+
+<span class="fc" id="L79">        List&lt;Point&gt; path = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L80">        Point point = used.get(used.size() - 1);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        while(point.previous != null) {</span>
+<span class="fc" id="L82">            path.add(0, point);</span>
+<span class="fc" id="L83">            point = point.previous;</span>
+        }
+<span class="fc" id="L85">        return path;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
