@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Fireball.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">Fireball.java</span></div><h1>Fireball.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import java.util.ArrayList;
+
+public class Fireball implements RetrieveValues {
+    public static final int PIXELS_PER_FRAME = 5;
+
+    private float x_vel;
+    private float y_vel;
+    private float initial_x;
+    private float initial_y;
+    private float target_x;
+    private float target_y;
+    private int speed;
+    
+    private int counts_to_next;
+    private int count;
+    
+    private ArrayList&lt;float[]&gt; coords;
+    private double distance;
+
+    private boolean target_reached;
+    
+    private PImage ball; 
+
+<span class="fc" id="L28">    public Fireball(float initial_x, float initial_y, float target_x, float target_y, PImage ball) {</span>
+<span class="fc" id="L29">        this.initial_x = initial_x;</span>
+<span class="fc" id="L30">        this.initial_y = initial_y;</span>
+<span class="fc" id="L31">        target_reached = false;</span>
+<span class="fc" id="L32">        this.target_x = target_x;</span>
+<span class="fc" id="L33">        this.target_y = target_y;</span>
+<span class="fc" id="L34">        this.ball = ball;</span>
+<span class="fc" id="L35">        speed = PIXELS_PER_FRAME;</span>
+<span class="fc" id="L36">        distance = findDistanceBetweenTwoPoints(initial_x, initial_y, target_x, target_y);</span>
+        
+<span class="fc" id="L38">        counts_to_next = (int)Math.round(distance/speed);</span>
+<span class="fc" id="L39">        coords = findPathToTarget();</span>
+        
+<span class="fc" id="L41">        count = 0;</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Creates an Arraylist containing the x,y coordinates of the path for the fireball to follow according to the current speed and distance they have to travel to reach the target
+     * @return coords
+     */
+    private ArrayList&lt;float[]&gt; findPathToTarget() {
+<span class="fc" id="L49">        float num = (float)(distance/speed);</span>
+<span class="fc" id="L50">        float x_inc = (initial_x - target_x)/num;</span>
+<span class="fc" id="L51">        float y_inc = (initial_y - target_y)/num;</span>
+        
+<span class="fc" id="L53">        ArrayList&lt;float[]&gt; coords = new ArrayList&lt;float[]&gt;();</span>
+<span class="fc" id="L54">        float[] coord = {initial_x, initial_y};</span>
+<span class="fc" id="L55">        coords.add(coord);</span>
+        
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (int i = 1; i &lt; counts_to_next; i++) {</span>
+<span class="fc" id="L58">            float x_coord = coords.get(i-1)[0] - x_inc;</span>
+<span class="fc" id="L59">            float y_coord = coords.get(i-1)[1] - y_inc;</span>
+<span class="fc" id="L60">            float[] new_coord = {x_coord, y_coord};</span>
+<span class="fc" id="L61">            coords.add(new_coord);</span>
+        }
+<span class="fc" id="L63">        coord[0] = target_x;</span>
+<span class="fc" id="L64">        coord[1] = target_y;</span>
+<span class="fc" id="L65">        coords.add(coord);</span>
+
+<span class="fc" id="L67">        return coords;</span>
+    }
+
+    /**
+     * Logic for moving the fireball across the screen until they reach their target.
+     * Current position of fireball depends on the number of times this method has been called.
+     * If target is reached, target_reached is set to true.
+     * @return true if fireball was fired, false otherwise
+     */
+    public boolean fire() {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (count &lt;= counts_to_next) {</span>
+<span class="fc" id="L78">            x_vel = coords.get(count)[0];</span>
+<span class="fc" id="L79">            y_vel = coords.get(count)[1];</span>
+<span class="fc" id="L80">            count++;</span>
+<span class="fc" id="L81">            return true;</span>
+        }
+        else {
+<span class="fc" id="L84">            target_reached = true;</span>
+<span class="fc" id="L85">            return false;</span>
+        }
+    }
+
+    /**
+     * Retrieves current x coordinate of fireball
+     * @return x_vel
+     */
+    public float getX() {
+<span class="fc" id="L94">        return x_vel;</span>
+    }
+
+    /**
+     * Retrieves current speed of fireball movement per frame
+     * @return speed
+     */
+    public int getSpeed() {
+<span class="fc" id="L102">        return speed;</span>
+    }
+
+    /**
+     * Retrieves current y coordinate of fireball
+     * @return y_vel
+     */
+    public float getY() {
+<span class="fc" id="L110">        return y_vel;</span>
+    }
+
+    /**
+     * Returns the fireball to tower position so their image doesn't remain on the screen after target is reached
+     */
+    public void disappear() {
+<span class="fc" id="L117">        x_vel = initial_x;</span>
+<span class="fc" id="L118">        y_vel = initial_y;</span>
+<span class="fc" id="L119">    }</span>
+    
+    /**
+     * Retrieves the total number of times to call the move() method to reach target destination
+     * @return counts_to_next
+     */
+    public int getCountsToNext() {
+<span class="fc" id="L126">        return counts_to_next;</span>
+    }
+
+    /**
+     * Retrieves boolean value that indicates whether target destination has been reached
+     * @return target_reached
+     */
+    public boolean targetReached() {
+<span class="fc" id="L134">        return target_reached;</span>
+    }
+    
+    /**
+     * Logic for increasing fireball speed when the fast forward button is selected and ensuring that it still reaches the target destination
+     * @param app that instantiates the class
+     * @param ff FastForward object for the app
+     */
+    public void tick(PApplet app, FastForward ff) {
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        if (ff.isSelected()) {</span>
+<span class="fc" id="L144">            speed = 2*PIXELS_PER_FRAME;</span>
+        }
+        else {
+<span class="fc" id="L147">            speed = PIXELS_PER_FRAME;</span>
+        }
+<span class="fc" id="L149">        counts_to_next = (int)Math.round(distance/speed);</span>
+<span class="fc" id="L150">    }</span>
+    /**
+     * Renders the fireball PImage onto the screen at its current position
+     * @param app that instantiates the object
+     */
+    public void draw(PApplet app) {
+<span class="fc" id="L156">        app.image(ball, x_vel, y_vel);</span>
+<span class="fc" id="L157">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

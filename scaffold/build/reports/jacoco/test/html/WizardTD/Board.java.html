@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Board.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">Board.java</span></div><h1>Board.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import java.util.*;
+import processing.data.JSONObject;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+
+public class Board {
+    public static final int BOARD_WIDTH = 20;
+    private int initial_x; 
+    private int initial_y;
+    private int wizard_i;
+    private int wizard_j;
+
+    private PImage grass;
+    private PImage shrub;
+    private PImage horizontal_path;
+    private PImage vertical_path;
+    private PImage right_down_path;
+    private PImage right_up_path;
+    private PImage left_down_path;
+    private PImage left_up_path;
+    private PImage cross_path;
+    private PImage t_path;
+    private PImage flipped_t_path;
+    private PImage right_t_path;
+    private PImage left_t_path;
+    private PImage wizard_house;
+
+    private ArrayList&lt;String&gt; map_as_string;
+    private int[][][] tile_coords;
+    private int[][] path_array;
+    private HashMap&lt;int[], PImage&gt; paths;
+    private HashMap&lt;int[], PImage&gt; elements;
+    private int[] wizard_coords;
+    private ArrayList&lt;ArrayList&lt;int[]&gt;&gt; all_valid_paths;
+
+<span class="fc" id="L43">    public Board(PApplet app, PImage grass, PImage shrub, PImage horizontal_path, PImage right_down_path, PImage cross_path, PImage t_path, PImage wizard_house, JSONObject json, int height){</span>
+<span class="fc" id="L44">        initial_x = 0;</span>
+<span class="fc" id="L45">        initial_y = height - BOARD_WIDTH*RetrieveValues.PIXELSPERTILE;</span>
+
+<span class="fc" id="L47">        this.grass = grass;</span>
+<span class="fc" id="L48">        this.shrub = shrub;</span>
+<span class="fc" id="L49">        this.wizard_house = wizard_house;</span>
+
+<span class="fc" id="L51">        this.horizontal_path = horizontal_path;</span>
+<span class="fc" id="L52">        vertical_path = rotateImageByDegrees(horizontal_path, 90, app);</span>
+
+<span class="fc" id="L54">        this.right_down_path = right_down_path;</span>
+<span class="fc" id="L55">        right_up_path = rotateImageByDegrees(right_down_path, 90, app);</span>
+<span class="fc" id="L56">        left_up_path = rotateImageByDegrees(right_down_path, 180, app);</span>
+<span class="fc" id="L57">        left_down_path = rotateImageByDegrees(right_down_path, 270, app);</span>
+
+<span class="fc" id="L59">        this.cross_path = cross_path;</span>
+
+<span class="fc" id="L61">        this.t_path = t_path;</span>
+<span class="fc" id="L62">        flipped_t_path = rotateImageByDegrees(t_path, 180, app);</span>
+<span class="fc" id="L63">        right_t_path = rotateImageByDegrees(t_path, 90, app);</span>
+<span class="fc" id="L64">        left_t_path = rotateImageByDegrees(t_path, 270, app);</span>
+        
+<span class="fc" id="L66">        map_as_string = getMap(json);</span>
+<span class="fc" id="L67">        tile_coords = setCoords();</span>
+<span class="fc" id="L68">        path_array = set2DPathArray();</span>
+<span class="fc" id="L69">        wizard_coords = getWizardHouse();</span>
+<span class="fc" id="L70">        paths = getPaths(app);</span>
+<span class="fc" id="L71">        elements = getElements();</span>
+<span class="fc" id="L72">        all_valid_paths = findShortestPathstoFollow();</span>
+<span class="fc" id="L73">    }</span>
+
+     /**
+     * Retrieves the layout of map for the current level provided in the config JSONObject and stores each row as a String in an ArrayList
+     * @return lines_in_file
+     */
+    protected ArrayList&lt;String&gt; getMap(JSONObject json) {
+<span class="fc" id="L80">        File map_file = new File(json.getString(&quot;layout&quot;));</span>
+<span class="fc" id="L81">        ArrayList&lt;String&gt; lines_in_file = new ArrayList&lt;String&gt;();</span>
+
+        try {
+<span class="fc" id="L84">            Scanner scan = new Scanner(map_file);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">            while (scan.hasNextLine()) {</span>
+<span class="fc" id="L86">                String line = scan.nextLine();</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">                while (line.length() != BOARD_WIDTH) {</span>
+<span class="fc" id="L88">                    line += &quot; &quot;;</span>
+                }
+<span class="fc" id="L90">                lines_in_file.add(line);</span>
+<span class="fc" id="L91">            }</span>
+<span class="fc" id="L92">            scan.close();         </span>
+<span class="nc" id="L93">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L94">            System.err.println(&quot;File not found!&quot;);</span>
+<span class="fc" id="L95">        }</span>
+            
+<span class="fc" id="L97">        return lines_in_file;</span>
+    }
+
+     /**
+     * Source: https://stackoverflow.com/questions/37758061/rotate-a-buffered-image-in-java
+     * @param pimg The image to be rotated
+     * @param angle between 0 and 360 degrees
+     * @return the new rotated image
+     */
+    public PImage rotateImageByDegrees(PImage pimg, double angle, PApplet app) {
+<span class="fc" id="L107">        BufferedImage img = (BufferedImage) pimg.getNative();</span>
+<span class="fc" id="L108">        double rads = Math.toRadians(angle);</span>
+<span class="fc" id="L109">        double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));</span>
+<span class="fc" id="L110">        int w = img.getWidth();</span>
+<span class="fc" id="L111">        int h = img.getHeight();</span>
+<span class="fc" id="L112">        int newWidth = (int) Math.floor(w * cos + h * sin);</span>
+<span class="fc" id="L113">        int newHeight = (int) Math.floor(h * cos + w * sin);</span>
+
+<span class="fc" id="L115">        PImage result = app.createImage(newWidth, newHeight, PApplet.RGB);</span>
+        //BufferedImage rotated = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+<span class="fc" id="L117">        BufferedImage rotated = (BufferedImage) result.getNative();</span>
+<span class="fc" id="L118">        Graphics2D g2d = rotated.createGraphics();</span>
+<span class="fc" id="L119">        AffineTransform at = new AffineTransform();</span>
+<span class="fc" id="L120">        at.translate((newWidth - w) / 2, (newHeight - h) / 2);</span>
+
+<span class="fc" id="L122">        int x = w / 2;</span>
+<span class="fc" id="L123">        int y = h / 2;</span>
+
+<span class="fc" id="L125">        at.rotate(rads, x, y);</span>
+<span class="fc" id="L126">        g2d.setTransform(at);</span>
+<span class="fc" id="L127">        g2d.drawImage(img, 0, 0, null);</span>
+<span class="fc" id="L128">        g2d.dispose();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (int i = 0; i &lt; newWidth; i++) {</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">            for (int j = 0; j &lt; newHeight; j++) {</span>
+<span class="fc" id="L131">                result.set(i, j, rotated.getRGB(i, j));</span>
+            }
+        }
+
+<span class="fc" id="L135">        return result;</span>
+    }
+        
+    /**
+     * Calculates the leftmost x,y pixel coordinates of each tile on the board, according to their respective row and column position
+     * row and column number is relative to board width
+     * x, y coordinate depends on the number of pixels per tile
+     * @return coord_array
+     */
+    private int[][][] setCoords() {
+<span class="fc" id="L145">        int[][][] coord_array = new int[BOARD_WIDTH][BOARD_WIDTH][2];</span>
+        int x;
+        int y;
+
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_WIDTH; i++) {</span>
+<span class="fc" id="L150">            y = initial_y + (RetrieveValues.PIXELSPERTILE*i);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_WIDTH; j++) {</span>
+<span class="fc" id="L152">                x = initial_x + (RetrieveValues.PIXELSPERTILE*j);  </span>
+<span class="fc" id="L153">                coord_array[i][j][0] = x;</span>
+<span class="fc" id="L154">                coord_array[i][j][1] = y;</span>
+
+            }    
+        } 
+<span class="fc" id="L158">        return coord_array;</span>
+    }
+
+    /**
+     * Creates a 2D array to determine the location of a path tile
+     * path or wizard house represented by the value 0
+     * all other path elements represented by the value 1
+     * @return path_array
+     */
+    private int[][] set2DPathArray() {
+<span class="fc" id="L168">        int[][] path_array = new int[BOARD_WIDTH][BOARD_WIDTH];</span>
+
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_WIDTH; i++) {</span>
+<span class="fc" id="L171">            String line = map_as_string.get(i); //get ith row in map</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_WIDTH; j++) { //get jth column in map</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">                if (line.charAt(j) == 'X') { </span>
+<span class="fc" id="L174">                    path_array[i][j] = 0;</span>
+                }
+<span class="fc bfc" id="L176" title="All 2 branches covered.">                else if (line.charAt(j) == 'W') {</span>
+<span class="fc" id="L177">                    path_array[i][j] = 0;</span>
+<span class="fc" id="L178">                    wizard_i = i;</span>
+<span class="fc" id="L179">                    wizard_j = j;</span>
+                }
+
+                else {
+<span class="fc" id="L183">                    path_array[i][j] = 1;</span>
+                }
+            }
+        }
+<span class="fc" id="L187">        return path_array;</span>
+    }
+
+    /**
+     * Retrieves an ArrayList containing the leftmost x, y pixel coordinates of each grass tile on the board by invoking the getTileCoords method
+     * @return grass_tile coordinates
+     */
+    public ArrayList&lt;int[]&gt; getGrassTiles() {
+<span class="fc" id="L195">        return getTileCoords(' ');</span>
+    }
+
+    /**
+     * Creates an ArrayList containing the leftmost x, y pixel coordinates of the tile that corresponds to a given char symbol in the map txt file
+     * @param symbol char that represents a certain tile element
+     * @return tiles_coords
+     */
+    private ArrayList&lt;int[]&gt; getTileCoords(char symbol) {
+<span class="fc" id="L204">        ArrayList&lt;int[]&gt; tiles_coords = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_WIDTH; i++) {</span>
+<span class="fc" id="L207">            String line = map_as_string.get(i); //get ith row in map</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_WIDTH; j++) { //get jth column in map</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">                if (line.charAt(j) == symbol) { </span>
+<span class="fc" id="L210">                    int[] coords = {tile_coords[i][j][0], tile_coords[i][j][1]};</span>
+<span class="fc" id="L211">                    tiles_coords.add(coords);</span>
+                }
+            }
+        }
+<span class="fc" id="L215">        return tiles_coords;</span>
+    }
+
+    /**
+     * Retrieves an ArrayList containing the leftmost x, y pixel coordinates of each path tile on the board by invoking the getTileCoords method
+     * @return path_tile coordinates
+     */
+    public ArrayList&lt;int[]&gt; getPathTiles() {
+<span class="fc" id="L223">        return getTileCoords('X');</span>
+    }
+
+    /**
+     * Finds the x, y pixel coordinates of the wizard house
+     * calculates the coordinate offset for centering the wizard house on its tile
+     * @return coords
+     */
+    private int[] getWizardHouse() {
+<span class="fc" id="L232">        int[] coords = new int[2];</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_WIDTH; i++) { //get rows in map</span>
+<span class="fc" id="L234">            String line = map_as_string.get(i); //current line in map</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_WIDTH; j++) { //get column in map</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">                if (line.charAt(j) == 'W') {</span>
+<span class="fc" id="L237">                    coords[0] = tile_coords[i][j][0] - 8;</span>
+<span class="fc" id="L238">                    coords[1] = tile_coords[i][j][1] - 8;</span>
+                }
+            }
+        }
+<span class="fc" id="L242">        return coords;</span>
+    }
+
+    /**
+     * Renders the image of each tile onto the screen at their respective coordinates
+     * @param app that instantiates this class
+     */
+    public void draw(PApplet app) {
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        for (Map.Entry&lt;int[], PImage&gt; entry: paths.entrySet()) {</span>
+<span class="fc" id="L251">            int[] coords = entry.getKey();</span>
+<span class="fc" id="L252">            app.image(entry.getValue(), coords[0], coords[1]);</span>
+<span class="fc" id="L253">        }</span>
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        for (Map.Entry&lt;int[], PImage&gt; entry: elements.entrySet()) {</span>
+<span class="fc" id="L256">            int[] coords = entry.getKey();</span>
+<span class="fc" id="L257">            app.image(entry.getValue(), coords[0], coords[1]);</span>
+<span class="fc" id="L258">        }        </span>
+<span class="fc" id="L259">    }  </span>
+
+    /**
+     * Renders wizard house on screen; invoked separately as it must called after all other board objects to be shown on top
+     * @param app that instantiates the class
+     */
+    public void drawWizard(PApplet app) {
+<span class="fc" id="L266">        app.image(this.wizard_house, wizard_coords[0], wizard_coords[1]);</span>
+<span class="fc" id="L267">    }</span>
+    
+    /**
+     * Creates hashmap that maps a path PImage to their respective path coordinate
+     * Path image to put is calculated by neighbouring tiles and whether they are paths or not 
+     * @param app that instantiantes this class
+     * @return path_map
+     */
+    private HashMap&lt;int[], PImage&gt; getPaths(PApplet app) {
+<span class="fc" id="L276">        HashMap&lt;int[], PImage&gt; path_map = new HashMap&lt;int[], PImage&gt;();</span>
+
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        for (int i = 1; i &lt; BOARD_WIDTH-1; i++) { //get path images for centre of map</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">            for (int j = 1; j &lt; BOARD_WIDTH-1; j++) {               </span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">                if (path_array[i][j] == 0) {</span>
+<span class="fc" id="L281">                    PImage to_put = new PImage();</span>
+<span class="fc bfc" id="L282" title="All 6 branches covered.">                    if (path_array[i-1][j] == 1 &amp; path_array[i+1][j] == 1) { //i-1 = row above, i+1 = row below</span>
+<span class="fc" id="L283">                        to_put = horizontal_path;</span>
+                    }
+<span class="fc bfc" id="L285" title="All 6 branches covered.">                    else if (path_array[i-1][j] == 0 &amp; path_array[i+1][j] == 0) {</span>
+<span class="fc bfc" id="L286" title="All 6 branches covered.">                        if (path_array[i][j+1] == 1 &amp; path_array[i][j-1] == 1) { //j+1 = column to right, j-1 = column to left</span>
+<span class="fc" id="L287">                            to_put = vertical_path;</span>
+                        }
+<span class="pc bpc" id="L289" title="1 of 6 branches missed.">                        else if (path_array[i][j+1] == 1 &amp; path_array[i][j-1] == 0) {</span>
+<span class="fc" id="L290">                            to_put = right_t_path;</span>
+                        }
+<span class="pc bpc" id="L292" title="3 of 6 branches missed.">                        else if (path_array[i][j+1] == 0 &amp; path_array[i][j-1] == 1) {</span>
+<span class="nc" id="L293">                            to_put = left_t_path;</span>
+                        }
+                        else {
+<span class="fc" id="L296">                            to_put = cross_path;</span>
+                       }
+                    }
+<span class="fc bfc" id="L299" title="All 6 branches covered.">                    else if (path_array[i-1][j] == 1 &amp; path_array[i+1][j] == 0) {</span>
+<span class="fc bfc" id="L300" title="All 6 branches covered.">                        if (path_array[i][j+1] == 1 &amp; path_array[i][j-1] == 1) {</span>
+<span class="fc" id="L301">                            to_put = vertical_path;</span>
+                        }
+<span class="fc bfc" id="L303" title="All 6 branches covered.">                        else if (path_array[i][j+1] == 1 &amp; path_array[i][j-1] == 0) {</span>
+<span class="fc" id="L304">                            to_put = right_down_path;</span>
+                        }
+<span class="pc bpc" id="L306" title="1 of 6 branches missed.">                        else if (path_array[i][j+1] == 0 &amp; path_array[i][j-1] == 1) {</span>
+<span class="fc" id="L307">                            to_put = left_down_path;</span>
+                        }
+                        else {
+<span class="fc" id="L310">                            to_put = t_path;</span>
+                        }   
+                    }
+                    else {
+<span class="fc bfc" id="L314" title="All 6 branches covered.">                        if (path_array[i][j+1] == 1 &amp; path_array[i][j-1] == 1) {</span>
+<span class="fc" id="L315">                            to_put = vertical_path;</span>
+                        }
+<span class="fc bfc" id="L317" title="All 6 branches covered.">                        else if (path_array[i][j+1] == 1 &amp; path_array[i][j-1] == 0) {</span>
+<span class="fc" id="L318">                            to_put = right_up_path;</span>
+                        }
+<span class="pc bpc" id="L320" title="1 of 6 branches missed.">                        else if (path_array[i][j+1] == 0 &amp; path_array[i][j-1] == 1) {</span>
+<span class="fc" id="L321">                            to_put = left_up_path;</span>
+                        }
+                        else {
+<span class="fc" id="L324">                            to_put = flipped_t_path;</span>
+                        }
+                    
+                    } 
+                    
+<span class="fc" id="L329">                    path_map.put(tile_coords[i][j], to_put);</span>
+                }
+            }
+        }
+
+        //get edges of board
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        for (int j = 1; j &lt; BOARD_WIDTH-1; j++) {</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">            if (path_array[0][j] == 0) {</span>
+<span class="fc" id="L337">                PImage to_put = getBorderRows(path_array[0], true, path_array[1], j, app);</span>
+<span class="fc" id="L338">                path_map.put(tile_coords[0][j], to_put);</span>
+            }
+
+<span class="fc bfc" id="L341" title="All 2 branches covered.">            if (path_array[BOARD_WIDTH-1][j] == 0) {</span>
+<span class="fc" id="L342">                PImage to_put = getBorderRows(path_array[BOARD_WIDTH-1], false, path_array[BOARD_WIDTH-2], j, app);</span>
+<span class="fc" id="L343">                path_map.put(tile_coords[BOARD_WIDTH-1][j], to_put);</span>
+            }
+
+<span class="fc bfc" id="L346" title="All 2 branches covered.">            if (path_array[j][0] == 0) {</span>
+<span class="fc" id="L347">                PImage to_put = getBorderColumns(path_array, 0, j, 1, true, app);</span>
+<span class="fc" id="L348">                path_map.put(tile_coords[j][0], to_put);</span>
+            }        
+
+<span class="fc bfc" id="L351" title="All 2 branches covered.">            if (path_array[j][BOARD_WIDTH-1] == 0) {</span>
+<span class="fc" id="L352">                PImage to_put = getBorderColumns(path_array, BOARD_WIDTH-1, j, -1, false, app);</span>
+<span class="fc" id="L353">                path_map.put(tile_coords[j][BOARD_WIDTH-1], to_put);</span>
+            }           
+        }
+
+<span class="fc bfc" id="L357" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_WIDTH; i += (BOARD_WIDTH-1)) {</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_WIDTH; j += (BOARD_WIDTH-1)) {</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">                if (path_array[i][j] == 0) {</span>
+<span class="fc" id="L360">                    path_map.put(tile_coords[i][j], cross_path);</span>
+                }
+            }
+        }
+
+<span class="fc" id="L365">        return path_map;</span>
+    }
+
+    /**
+     * Retrieves the path image to place on the top and bottom edges of the board
+     * @param row coordinates of each tile in the row
+     * @param is_top boolean value of whether row is top or bottom
+     * @param row_below coordinates of adjacent row
+     * @param column_index index of column at the given row coordinate
+     * @param app that instantiates this class
+     * @return the path PImage to place
+     * 
+     */
+    private PImage getBorderRows(int[] row, boolean is_top, int[] row_below, int column_index, PApplet app) {
+<span class="fc" id="L379">        PImage to_put = new PImage();</span>
+<span class="fc" id="L380">        int rotate_by = 0;</span>
+<span class="pc bpc" id="L381" title="1 of 6 branches missed.">        if (row[column_index+1] == 1 &amp; row[column_index-1] == 1) {</span>
+<span class="fc" id="L382">            to_put = vertical_path;      </span>
+        }
+<span class="pc bpc" id="L384" title="3 of 6 branches missed.">        else if (row[column_index+1] == 0 &amp; row[column_index-1] == 0) {</span>
+<span class="nc bnc" id="L385" title="All 2 branches missed.">            if (row_below[column_index] == 0) {</span>
+<span class="nc" id="L386">                to_put = cross_path;</span>
+            }
+            else {
+<span class="nc" id="L389">                to_put = flipped_t_path;</span>
+<span class="nc" id="L390">                rotate_by = 180;</span>
+            }
+        }
+<span class="pc bpc" id="L393" title="3 of 6 branches missed.">        else if (row[column_index+1] == 0 &amp; row[column_index-1] == 1) {</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">            if (row_below[column_index] == 0) {</span>
+<span class="nc" id="L395">                to_put = left_t_path;</span>
+<span class="nc" id="L396">                rotate_by = 90;</span>
+            }
+            else {
+<span class="fc" id="L399">                to_put = left_up_path;</span>
+<span class="fc" id="L400">                rotate_by = 90;</span>
+            }
+        }
+<span class="nc bnc" id="L403" title="All 2 branches missed.">        else if (row_below[column_index] == 0) {</span>
+<span class="nc" id="L404">                to_put = right_t_path;</span>
+        }
+        else {
+<span class="nc" id="L407">            to_put = right_up_path;</span>
+        }
+        
+<span class="fc bfc" id="L410" title="All 2 branches covered.">        if (is_top) {</span>
+<span class="fc" id="L411">            return to_put;</span>
+        }
+<span class="fc" id="L413">        return rotateImageByDegrees(to_put, rotate_by, app);</span>
+        
+    }
+
+    /**
+     * Retrieves the path image to place on the left and right edges of the board
+     * @param column 2D path array that indicates paths as 0
+     * @param column_num y position of current coordinate
+     * @param row_index x position of current row
+     * @param adjacent_column index of adjacent column
+     * @param is_left boolean value of whether column is on the left or right edge
+     * @param app that instantiates the class
+     * @return the path PImage to place
+     */
+
+    //get the images to put on the left and right edges of the board
+     private PImage getBorderColumns(int[][] column, int column_num, int row_index, int adjacent_column, boolean is_left, PApplet app) {
+<span class="fc" id="L430">        PImage to_put = new PImage();</span>
+<span class="fc" id="L431">        int rotate_by = 0;</span>
+        
+<span class="pc bpc" id="L433" title="1 of 6 branches missed.">        if (column[row_index-1][column_num] == 1 &amp; column[row_index+1][column_num] == 1) {</span>
+<span class="fc" id="L434">            to_put = horizontal_path;     </span>
+        }
+<span class="pc bpc" id="L436" title="3 of 6 branches missed.">        else if (column[row_index-1][column_num] == 0 &amp; column[row_index+1][column_num] == 0) {</span>
+<span class="nc bnc" id="L437" title="All 2 branches missed.">            if (column[row_index][column_num+adjacent_column] == 0) {</span>
+<span class="nc" id="L438">                to_put = cross_path;</span>
+            }
+            else {
+<span class="nc" id="L441">                to_put = right_t_path; //180</span>
+<span class="nc" id="L442">                rotate_by = 180;</span>
+            }  
+        }
+<span class="pc bpc" id="L445" title="3 of 6 branches missed.">        else if (column[row_index-1][column_num] == 0 &amp; column[row_index+1][column_num] == 1) {</span>
+<span class="pc bpc" id="L446" title="1 of 2 branches missed.">            if (column[row_index][column_num+adjacent_column] == 0) {</span>
+<span class="nc" id="L447">                to_put = flipped_t_path;</span>
+            }
+            else {
+<span class="fc" id="L450">                to_put = right_up_path; //90</span>
+<span class="fc" id="L451">                rotate_by = 90;</span>
+            }
+        }
+<span class="nc bnc" id="L454" title="All 6 branches missed.">        else if (column[row_index-1][column_num] == 1 &amp; column[row_index+1][column_num] == 0) {</span>
+<span class="nc bnc" id="L455" title="All 2 branches missed.">            if (column[row_index][column_num+adjacent_column] == 0) {</span>
+<span class="nc" id="L456">                to_put = t_path;</span>
+            }
+            else {
+<span class="nc" id="L459">                to_put = right_down_path; //270</span>
+<span class="nc" id="L460">                rotate_by = 270;</span>
+            }
+        }
+
+<span class="fc bfc" id="L464" title="All 2 branches covered.">        if (is_left) {</span>
+<span class="fc" id="L465">            return to_put;</span>
+        }
+<span class="fc" id="L467">        return rotateImageByDegrees(to_put, rotate_by, app);</span>
+    }
+
+    /**
+     * Creates a hashmap that maps the PImage of all grass and shrub tiles to their respective x,y pixel coordinates
+     * @return elements_map
+     */
+    private HashMap&lt;int[], PImage&gt; getElements() {
+<span class="fc" id="L475">        HashMap&lt;int[], PImage&gt; elements_map = new HashMap&lt;int[], PImage&gt;();</span>
+
+<span class="fc bfc" id="L477" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_WIDTH; i++) { //get rows in map</span>
+<span class="fc" id="L478">            String line = map_as_string.get(i); //current line in map</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_WIDTH; j++) { //get column in map</span>
+<span class="fc bfc" id="L480" title="All 4 branches covered.">                if (line.charAt(j) == ' ' || line.charAt(j) == 'W') {</span>
+<span class="fc" id="L481">                    elements_map.put(tile_coords[i][j], this.grass);</span>
+                }
+<span class="fc bfc" id="L483" title="All 2 branches covered.">                else if (line.charAt(j) == 'S') {</span>
+<span class="fc" id="L484">                    elements_map.put(tile_coords[i][j], this.shrub);</span>
+                }
+            }
+        }
+<span class="fc" id="L488">        return elements_map;</span>
+    }
+    
+    /**
+     * Retrieves an ArrayList containing coordinates of all valid monster spawn locations for a given map
+     * Spawn locations are determined by whether coordinates on the edge of the map that have a connected path to the wizard's house
+     * @return spawn_locations
+     */
+    public ArrayList&lt;int[]&gt; getSpawnLocations() {
+<span class="fc" id="L497">        ArrayList&lt;int[]&gt; spawn_locations = new ArrayList&lt;int[]&gt;();</span>
+<span class="fc" id="L498">        boolean[][] path_visited = new boolean[BOARD_WIDTH][BOARD_WIDTH];</span>
+
+<span class="fc" id="L500">        findSpawnLocations(wizard_i, wizard_j, spawn_locations, path_visited);</span>
+     
+<span class="pc bpc" id="L502" title="1 of 2 branches missed.">        if (spawn_locations.size() &lt; 1) {</span>
+<span class="nc" id="L503">            System.err.println(&quot;No spawn locations for this level!&quot;);</span>
+        }
+<span class="fc" id="L505">        return spawn_locations;</span>
+    }
+    
+    /**
+     * Recursively follows all paths starting from the wizard's house to the edge of the board to find all valid spawn locations
+     * Base case: reach the edge of the board
+     * Recursive relation: if one of the surrounding tiles is a path
+     * @param i the starting row position of the tile
+     * @param j the starting column position of the tile
+     * @param spawn_locations ArrayList to append valid spawn location positions
+     * @param path_visited 2D array of same size as board to remember whether path was traversed already by previous method call
+     */
+    private void findSpawnLocations(int i, int j, ArrayList&lt;int[]&gt; spawn_locations, boolean[][] path_visited) {
+<span class="pc bpc" id="L518" title="1 of 10 branches missed.">        if ((i == 0 || i == 19 || j == 0 || j == 19) &amp;&amp; path_array[i][j] == 0) { //base case = if at the edge of the board and on a path</span>
+<span class="fc" id="L519">            path_visited[i][j] = true;</span>
+<span class="fc" id="L520">            int[] array_coords = {i, j};</span>
+<span class="fc" id="L521">            spawn_locations.add(array_coords);</span>
+<span class="fc" id="L522">            return;</span>
+        }
+<span class="pc bpc" id="L524" title="3 of 4 branches missed.">        else if (path_array[i][j] == 0 || path_array[i][j] == 2) { //recursive relation = if current tile is a path and one of the surrounding tiles is also a path, go to the next path</span>
+<span class="fc" id="L525">            path_visited[i][j] = true;</span>
+<span class="fc bfc" id="L526" title="All 4 branches covered.">            if (path_array[i][j+1] == 0 &amp;&amp; !path_visited[i][j+1]) {</span>
+<span class="fc" id="L527">                findSpawnLocations(i, j+1, spawn_locations, path_visited);</span>
+                }
+<span class="fc bfc" id="L529" title="All 4 branches covered.">            if (path_array[i][j-1] == 0 &amp;&amp; !path_visited[i][j-1]) {</span>
+<span class="fc" id="L530">                findSpawnLocations(i, j-1, spawn_locations, path_visited);</span>
+                }
+<span class="fc bfc" id="L532" title="All 4 branches covered.">            if (path_array[i+1][j] == 0 &amp;&amp; !path_visited[i+1][j]) {</span>
+<span class="fc" id="L533">                findSpawnLocations(i+1, j, spawn_locations, path_visited);                </span>
+                }
+<span class="fc bfc" id="L535" title="All 4 branches covered.">            if (path_array[i-1][j] == 0 &amp;&amp; !path_visited[i-1][j]) {</span>
+<span class="fc" id="L536">                findSpawnLocations(i-1, j, spawn_locations, path_visited);  </span>
+            }  
+        }  
+<span class="fc" id="L539">    }</span>
+    
+    /**
+     * Finds the shortest path to the wizard house and stores in a nested ArrayList
+     * If multiple paths of the same length are found, they are all added to the list
+     * @return all_valid_paths
+     */
+    private ArrayList&lt;ArrayList&lt;int[]&gt;&gt; findShortestPathstoFollow() {
+<span class="fc" id="L547">        ArrayList&lt;int[]&gt; spawn_locations = getSpawnLocations();</span>
+<span class="fc" id="L548">        ArrayList&lt;ArrayList&lt;int[]&gt;&gt; all_valid_paths = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L549">        PathFinding.Point end = new PathFinding.Point(wizard_j, wizard_i, null);</span>
+         
+<span class="fc bfc" id="L551" title="All 2 branches covered.">        for (int[] location : spawn_locations) {        </span>
+<span class="fc" id="L552">            PathFinding.Point start = new PathFinding.Point(location[1], location[0], null);</span>
+<span class="fc" id="L553">            List&lt;PathFinding.Point&gt; path = PathFinding.FindPath(path_array, start, end);</span>
+
+<span class="pc bpc" id="L555" title="1 of 2 branches missed.">            if (path != null) {</span>
+<span class="fc" id="L556">                ArrayList&lt;int[]&gt; valid_path = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L557">                valid_path.add(tile_coords[location[0]][location[1]]);</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">                for (PathFinding.Point point : path) {</span>
+<span class="fc" id="L559">                    int[] coords = tile_coords[point.y][point.x];</span>
+<span class="fc" id="L560">                    valid_path.add(coords);</span>
+<span class="fc" id="L561">                }</span>
+<span class="fc" id="L562">                all_valid_paths.add(valid_path);</span>
+            }
+<span class="fc" id="L564">        }</span>
+
+<span class="pc bpc" id="L566" title="2 of 4 branches missed.">        if (all_valid_paths.size() == 0 || all_valid_paths == null) {</span>
+<span class="nc" id="L567">            System.err.println(&quot;No valid paths to follow&quot;);</span>
+<span class="nc" id="L568">            System.exit(1);</span>
+        }
+
+<span class="fc" id="L571">        int smallest = all_valid_paths.get(0).size(); //get shortest path</span>
+<span class="fc bfc" id="L572" title="All 2 branches covered.">        for (int i = 1; i &lt; all_valid_paths.size(); i++) {</span>
+<span class="pc bpc" id="L573" title="1 of 2 branches missed.">            if (all_valid_paths.get(i).size() &lt; smallest) {</span>
+<span class="nc" id="L574">                smallest = all_valid_paths.get(i).size();</span>
+<span class="nc" id="L575">                all_valid_paths.remove(i-1);</span>
+            }
+<span class="pc bpc" id="L577" title="1 of 2 branches missed.">            else if (all_valid_paths.get(i).size() &gt; smallest) {</span>
+<span class="fc" id="L578">                all_valid_paths.remove(i);</span>
+            }
+        }
+<span class="fc" id="L581">        return all_valid_paths;</span>
+    }
+
+    /**
+     * Retrieves nestest ArrayList containing all shortest paths to the wizard house
+     * @return all_valid_path
+     */
+    public ArrayList&lt;ArrayList&lt;int[]&gt;&gt; getValidPaths() {
+<span class="fc" id="L589">        return all_valid_paths;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

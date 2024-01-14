@@ -1,0 +1,20 @@
+SS             SS XX
+  S S S  S S  S    X
+        S   S  SS S 
+XXXXX         S     
+  S X   S  S      S 
+  SXXXXXXXXXXXXXX   
+  S X X   X  X  S
+    S S   X    XX S 
+XXXXXXXXXWXXXXXXX S 
+   S   S        X SS
+     S S        X S 
+ S   S    SS    XXXX
+  SSS    S   S      
+ S   S          SS  
+ S S S  S  S  SS SS 
+ S   S         S SS 
+ SSSSS     S   S  S 
+ SS SS  S      SSSS 
+      S    S   S  SS
+             S      

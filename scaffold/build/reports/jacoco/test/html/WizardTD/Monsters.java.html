@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Monsters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">Monsters.java</span></div><h1>Monsters.java</h1><pre class="source lang-java linenums">package WizardTD;
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONObject;
+
+import java.util.ArrayList;
+
+public class Monsters extends WaveElements implements Cloneable {
+    public static final int DIMENSIONS = 20;
+    public static final float OFFSET = (PIXELSPERTILE-DIMENSIONS)/2;
+    
+    private PImage type;
+    private int hp;
+    private double speed;
+    private double armour;
+    private int mana_gained_on_kill;
+    private int quantity;
+    private int current_quantity;
+    private float current_hp;
+    private double initial_speed;
+
+    private float x;
+    private float y;
+    private int x_index;
+    private int y_index;
+
+    private PImage death_1;
+    private PImage death_2;
+    private PImage death_3;
+    private PImage death_4;
+    private PImage death_5;
+
+    private int count_4_frames;
+    private int counts_to_next;
+    private int count;
+    
+    private boolean is_alive;
+    private boolean respawn;
+    private boolean speed_up;
+    
+    private ArrayList&lt;ArrayList&lt;int[]&gt;&gt; all_valid_paths;
+    private ArrayList&lt;int[]&gt; valid_path;
+
+    private HealthBar health_bar;
+   
+    public Monsters(JSONObject json, Board board, JSONObject current_wave, PImage type, String type_as_string, PImage death_1, PImage death_2, PImage death_3, PImage death_4, PImage death_5) {
+<span class="fc" id="L47">        super(json);</span>
+
+<span class="fc" id="L49">        this.death_1 = death_1;</span>
+<span class="fc" id="L50">        this.death_2 = death_2;</span>
+<span class="fc" id="L51">        this.death_3 = death_3;</span>
+<span class="fc" id="L52">        this.death_4 = death_4;</span>
+<span class="fc" id="L53">        this.death_5 = death_5;</span>
+<span class="fc" id="L54">        count_4_frames = 0;</span>
+<span class="fc" id="L55">        respawn = false;</span>
+        
+<span class="fc" id="L57">        hp = (int)setMonsterAttribute(current_wave, type_as_string, &quot;hp&quot;);</span>
+<span class="fc" id="L58">        initial_speed = setMonsterAttribute(current_wave, type_as_string, &quot;speed&quot;);</span>
+<span class="fc" id="L59">        speed = initial_speed;</span>
+<span class="fc" id="L60">        counts_to_next = (int)Math.round(PIXELSPERTILE/speed);</span>
+<span class="fc" id="L61">        count = 0;</span>
+<span class="fc" id="L62">        armour = setMonsterAttribute(current_wave, type_as_string, &quot;armour&quot;);</span>
+<span class="fc" id="L63">        mana_gained_on_kill = (int)setMonsterAttribute(current_wave, type_as_string, &quot;mana_gained_on_kill&quot;);</span>
+<span class="fc" id="L64">        quantity = (int)setMonsterAttribute(current_wave, type_as_string, &quot;quantity&quot;);</span>
+<span class="fc" id="L65">        this.type = type;</span>
+        
+<span class="fc" id="L67">        current_hp = hp;</span>
+<span class="fc" id="L68">        current_quantity = quantity;</span>
+<span class="fc" id="L69">        is_alive = true;</span>
+<span class="fc" id="L70">        speed_up = false;</span>
+
+<span class="fc" id="L72">        all_valid_paths = board.getValidPaths();</span>
+<span class="fc" id="L73">        valid_path = new ArrayList&lt;int[]&gt;();</span>
+<span class="fc" id="L74">        health_bar = null;</span>
+<span class="fc" id="L75">    }</span>
+
+    /**
+     * Overrides the cloneable interface method to create a new monster object that is a copy of the current Monster instance but points to a different location in memory.
+     * Allows monsters to be cloned with the same initial attribute values but as separate entities.
+     */
+    @Override
+    public Monsters clone() {
+<span class="fc" id="L83">        Monsters new_monster = null;</span>
+        try {
+<span class="fc" id="L85">            new_monster = (Monsters)super.clone();</span>
+        }
+<span class="nc" id="L87">        catch (CloneNotSupportedException e) {</span>
+<span class="nc" id="L88">            System.err.println(&quot;Monsters not cloneable!&quot;);</span>
+<span class="fc" id="L89">        }</span>
+
+<span class="fc" id="L91">        return new_monster;</span>
+    }
+
+    /**
+     * Invoked when the monster's HP decreases to 0 and changes it's state to dead, to prevent is from respawning.
+     * When the current instance is killed, the remaining quantity of monsters of this type for the current wave is also decremented.
+     */
+    public void kill() {
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (is_alive) {</span>
+<span class="fc" id="L100">            is_alive = false;</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">            if (current_quantity &gt; 0) {</span>
+<span class="fc" id="L102">                current_quantity--;</span>
+            }
+            else {
+<span class="nc" id="L105">                current_quantity = 0;</span>
+            }   
+        }    
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Invoked to reduce the monster's HP when it is attacked by a fireball and change the health bar accordingly.
+     * If the monster's HP reduces to 0 or below, the kill() method is invoked to change its alive status.
+     * @param damage amount of damage that is inflicted on monster, disregarding its current armour value
+     */
+    public void attack(double damage) {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (damage &gt; 0) {</span>
+<span class="fc" id="L117">            current_hp -= (float)((1 - armour)*damage);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">            if (current_hp &lt;= 0) {</span>
+<span class="nc" id="L119">                health_bar.setExternalWidth(0);</span>
+<span class="nc" id="L120">                kill();</span>
+            }
+            else {
+<span class="fc" id="L123">                health_bar.setExternalWidth(current_hp/hp);</span>
+            }
+        }
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * Invoked when Monsters are instantiated to set the path that it will follow to the wizard's house when it is spawned/respawned
+     */
+    public void setSpawnedPath() {
+<span class="fc" id="L132">        int index = random.nextInt(all_valid_paths.size());</span>
+<span class="fc" id="L133">        valid_path = all_valid_paths.get(index);  //set the path that the monster object will follow   </span>
+
+<span class="fc" id="L135">        x = valid_path.get(0)[0]; //first element of path list is spawn location</span>
+<span class="fc" id="L136">        x_index = valid_path.get(0)[0]; //index allows increment to next coordinate by speed</span>
+        
+<span class="fc" id="L138">        y = valid_path.get(0)[1];</span>
+<span class="fc" id="L139">        y_index = valid_path.get(0)[1];</span>
+
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if (!respawn) {</span>
+<span class="fc" id="L142">            health_bar = new HealthBar(this);</span>
+        }
+<span class="fc" id="L144">    }</span>
+
+    /**
+     * Invoked when monster reaches the wizard's house to indicate whether it needs to be respawned or not
+     */
+    public void setRespawn() {
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (!respawn) {</span>
+<span class="nc" id="L151">            respawn = true;</span>
+        }
+        else {
+<span class="fc" id="L154">            respawn = false;</span>
+        }   
+<span class="fc" id="L156">    }</span>
+    /**
+     * Logic for increasing the current monster's speed when fast forward option is selected. When invoked, must call slowdown() method to revert monster's speed to normal.
+     */
+    public void speedup() {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (!speed_up) {</span>
+<span class="fc" id="L162">            speed = initial_speed*2;</span>
+<span class="fc" id="L163">            counts_to_next = (int)Math.round(PIXELSPERTILE/speed);</span>
+<span class="fc" id="L164">            count = Math.round(count/2);</span>
+<span class="fc" id="L165">            speed_up = true;</span>
+        }
+<span class="fc" id="L167">    }</span>
+
+    /**
+     * Logic for reverting the current monster's speed to initial speed after the fast forward option is unselected.
+     */
+    public void slowdown() {
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if (speed_up) {</span>
+<span class="nc" id="L174">            speed = initial_speed;</span>
+<span class="nc" id="L175">            counts_to_next = (int)Math.round(PIXELSPERTILE/speed);</span>
+<span class="nc" id="L176">            count = count*2;</span>
+<span class="nc" id="L177">            speed_up = false;</span>
+        }
+<span class="fc" id="L179">    }</span>
+
+    /**
+     * Logic for moving the spawned monster along its set path and changing its x,y coordinates according to its current speed.
+     * This method only has effect when the current monster is alive and it has not reached the wizard's house.
+     * @return true if monster's position has changed, false otherwise
+     */
+    public boolean move() {
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        if (is_alive) {</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">            for (int i = 0; i &lt; (valid_path.size()-1); i++) {</span>
+<span class="fc bfc" id="L189" title="All 4 branches covered.">                if (valid_path.get(i)[0] == x_index &amp;&amp; valid_path.get(i)[1] == y_index) {  //x and y index remembers the next closest tile that they are incrementing towards</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">                    if (count == counts_to_next) {</span>
+<span class="fc" id="L191">                        count = 0;</span>
+<span class="fc" id="L192">                        x_index = valid_path.get(i+1)[0];</span>
+<span class="fc" id="L193">                        x = x_index;</span>
+<span class="fc" id="L194">                        y_index = valid_path.get(i+1)[1];</span>
+<span class="fc" id="L195">                        y = y_index;</span>
+                    }
+                    else {
+<span class="fc" id="L198">                        count++;</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">                        if ((x_index - valid_path.get(i+1)[0]) == -PIXELSPERTILE) {</span>
+<span class="fc" id="L200">                            x += speed;</span>
+                        }
+<span class="fc bfc" id="L202" title="All 2 branches covered.">                        else if ((x_index - valid_path.get(i+1)[0]) == PIXELSPERTILE) {</span>
+<span class="fc" id="L203">                            x -= speed;</span>
+                        }
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">                        else if ((y_index - valid_path.get(i+1)[1]) == -PIXELSPERTILE) {</span>
+<span class="nc" id="L206">                            y += speed;</span>
+                        }
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">                        else if ((y_index - valid_path.get(i+1)[1]) == PIXELSPERTILE) {</span>
+<span class="fc" id="L209">                            y -= speed;</span>
+                        }
+                    }
+<span class="fc" id="L212">                    return true;       </span>
+                }    
+            }
+        }
+<span class="nc" id="L216">        return false;</span>
+    }
+
+    /**
+     * Renders the death animation on screen after the monster dies. Each death image lasts for 4 frames and monster's position on the screen does not change during this method call.
+     * @param app that invokes this object
+     * @param ff FastForward object used to increase the speed at which the monster's death animation lasts when fast forward is selected
+     */
+    public void deathAnimation(PApplet app, FastForward ff) {
+<span class="fc" id="L225">        count_4_frames++;</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">        if (ff.isSelected()) {</span>
+<span class="nc" id="L227">            count_4_frames++;</span>
+        }
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">        if (!is_alive) {</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (count_4_frames &lt;= 4) {</span>
+<span class="fc" id="L231">                app.image(death_1, x+OFFSET, y+OFFSET);</span>
+            }
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            else if (count_4_frames &lt;= 8) {</span>
+<span class="fc" id="L234">                app.image(death_2, x+OFFSET, y+OFFSET);</span>
+            }
+<span class="fc bfc" id="L236" title="All 2 branches covered.">            else if (count_4_frames &lt;= 12) {</span>
+<span class="fc" id="L237">                app.image(death_3, x+OFFSET, y+OFFSET);</span>
+            }
+<span class="fc bfc" id="L239" title="All 2 branches covered.">            else if (count_4_frames &lt;= 16) {</span>
+<span class="fc" id="L240">                app.image(death_4, x+OFFSET, y+OFFSET);</span>
+            }
+<span class="fc bfc" id="L242" title="All 2 branches covered.">            else if (count_4_frames &lt;= 20) {</span>
+<span class="fc" id="L243">                app.image(death_5, x+OFFSET, y+OFFSET);</span>
+            }
+            else {
+<span class="fc" id="L246">                app.image(death_5, x+OFFSET, y+OFFSET);</span>
+<span class="fc" id="L247">                count_4_frames = -1;</span>
+            }
+        }
+        else {
+<span class="nc" id="L251">            count_4_frames = 0;</span>
+        }   
+<span class="fc" id="L253">    }</span>
+    /**
+     * Indicates whether the current monster's death animation has completed executing after it dies to prevent the object from being used or called again.
+     * @return true if death animation has been completed, false otherwise
+     */
+    public boolean disappeared() {
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        if (count_4_frames == -1) {</span>
+<span class="fc" id="L260">            return true;</span>
+        }
+<span class="fc" id="L262">        return false;</span>
+    }
+    
+    /**
+     * Checks if the monster has reached the wizard house, and if alive, decreases the wizard's current mana by the current HP amount.
+     * Allows the monster to be respawned to a valid spawn location when the object is inv oked again.
+     * @param mana Mana object whose mana needs to be decreased
+     */
+    public void respawnMonster(Mana mana) {
+<span class="fc" id="L271">        int last_index = valid_path.size() - 1;</span>
+<span class="pc bpc" id="L272" title="2 of 6 branches missed.">        if ((x_index == valid_path.get(last_index)[0]) &amp;&amp; (y_index == valid_path.get(last_index)[1]) &amp;&amp; is_alive) {</span>
+<span class="fc" id="L273">            mana.decreaseMana(current_hp);</span>
+<span class="fc" id="L274">            setSpawnedPath();</span>
+<span class="fc" id="L275">            respawn = true;</span>
+        }
+<span class="fc" id="L277">    }</span>
+
+    /**
+     * Renders the monster and its healthbar on screen in their current position
+     * @param app that invokes this object
+     */
+    public void draw(PApplet app) {
+<span class="fc" id="L284">        app.image(type, x+OFFSET, y+OFFSET);</span>
+<span class="fc" id="L285">        this.health_bar.tick();</span>
+<span class="fc" id="L286">        this.health_bar.drawRectangle(app);</span>
+<span class="fc" id="L287">    }</span>
+
+    /**
+     * Indicates whether the monster needs to be respawned or not.
+     * @return true if monster needs to be respawned, false otherwise
+     */
+    public boolean getRespawn() {
+<span class="fc" id="L294">        return respawn;</span>
+    }
+
+    /**
+     * Retrieves current x position of monster as shown on screen.
+     * @return x + offset value used to centre image in the middle of the path
+     */
+    public float getX() {
+<span class="fc" id="L302">        return x+OFFSET;</span>
+    }
+
+    /**
+     * Retrieves current y position of mosnter as shown on screen
+     * @return y + offset value used to centre image in the middle of the path
+     */
+    public float getY() {
+<span class="fc" id="L310">        return y+OFFSET;</span>
+    }
+
+    /**
+     * Retrieves current quantity of monsters of the current instance's type for the current wave
+     * @return current quantity
+     */
+    public int getCurrentQuantity() {
+<span class="fc" id="L318">        return current_quantity;</span>
+    }
+
+    /**
+     * Retrieves the initial quantity of monsters of the current instance's type for the current wave
+     * @return initial quantity
+     */
+    public int getQuantity() {
+<span class="fc" id="L326">        return quantity;</span>
+    }
+
+    /**
+     * Retrieves monster's current alive status
+     * @return true if alive, false otherwise
+     */
+    public boolean isAlive() {
+<span class="fc" id="L334">        return is_alive;</span>
+    }
+
+    /**
+     * Retrieves monster's current hp
+     * @return current hp
+     */
+    public float getHP() {
+<span class="fc" id="L342">        return current_hp;</span>
+    }
+
+    /**
+     * Retrieves monster's current speed, which represents how many pixels it moves per frame
+     * @return current speed
+     */
+    public double getSpeed() {
+<span class="fc" id="L350">        return speed;</span>
+    }
+
+    /**
+     * Retrieves the proportion of damage the monster can take when attacked
+     * @return armour, where 1-armour indicates the proportion of damage that is inflicted after an attack
+     */
+    public double getArmour() {
+<span class="fc" id="L358">        return armour;</span>
+    }
+
+    /**
+     * Retrieves the amount of mana that can be gained from the monster after it is killed
+     * @return mana gained on kill
+     */
+    public int getManaGained() {
+<span class="fc" id="L366">        return mana_gained_on_kill;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

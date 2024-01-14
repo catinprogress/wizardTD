@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BuildTower.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">BuildTower.java</span></div><h1>BuildTower.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Collection;
+
+public class BuildTower extends GameplayActions implements RetrieveValues{
+    private JSONObject json;
+    private int tower_cost;
+
+    private ArrayList&lt;int[]&gt; grass_tiles_coords;
+    private int[] coords;
+    private HashMap&lt;int[], Tower&gt; purchased_towers;
+    private HashMap&lt;Integer, PImage&gt; tower_images;
+   
+    private Mana mana;
+    private UpgradeRange range;
+    private UpgradeSpeed speed;
+    private UpgradeDamage damage;
+    private UpgradeCost cost_show;
+    
+    private Shape show_cost;
+    private PImage ball;
+
+    public BuildTower(Mana mana, JSONObject json, UpgradeRange range, UpgradeSpeed speed, UpgradeDamage damage, PImage tower_0, PImage tower_1, PImage tower_2, Board board, PImage ball) {
+<span class="fc" id="L29">        super(152, 't', &quot;T &quot;, &quot;Build\ntower&quot;);</span>
+<span class="fc" id="L30">        this.json = json;</span>
+<span class="fc" id="L31">        tower_images = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L32">        tower_images.put(1, tower_0);</span>
+<span class="fc" id="L33">        tower_images.put(2, tower_1);</span>
+<span class="fc" id="L34">        tower_images.put(3, tower_2);</span>
+<span class="fc" id="L35">        this.mana = mana;</span>
+<span class="fc" id="L36">        grass_tiles_coords = board.getGrassTiles();</span>
+<span class="fc" id="L37">        purchased_towers = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L38">        this.ball = ball;</span>
+
+<span class="fc" id="L40">        this.range = range;</span>
+<span class="fc" id="L41">        this.speed = speed;</span>
+<span class="fc" id="L42">        this.damage = damage;</span>
+<span class="fc" id="L43">        cost_show = new UpgradeCost(this.damage, this.range, this.speed);</span>
+<span class="fc" id="L44">        show_cost = new Shape(585, y+2, 52, 18, COSTBOX, COSTBOX);</span>
+        
+<span class="fc" id="L46">        tower_cost = (int)getNumericAmount(&quot;tower_cost&quot;, json);</span>
+        
+<span class="fc" id="L48">    }</span>
+    
+    /**
+     * Retrieves the object's UpgradeRange instance
+     * @return range
+     */
+    public UpgradeRange getRange() {
+<span class="fc" id="L55">        return range;</span>
+    }
+
+    /**
+     * Retrieves the object's UpgradeDamage instance
+     * @return damage
+     */
+    public UpgradeDamage getDamage() {
+<span class="fc" id="L63">        return damage;</span>
+    }
+
+    /**
+     * Retrieves the object's UpgradeSpeed instance
+     * @return speed
+     */
+    public UpgradeSpeed getSpeed() {
+<span class="fc" id="L71">        return speed;</span>
+    }
+
+    /**
+     * Retrieves all the available tower level PImages as a HashMap where a PImage object maps to the corresponding level
+     * @return tower_images
+     */
+    public HashMap&lt;Integer, PImage&gt; getTowerImages() {
+<span class="fc" id="L79">        return tower_images;</span>
+    }
+
+    /**
+     * Retrieves the UpgradeCost object for this instance that shows the cost of all upgrades selected
+     * @return cost_show
+     */
+    public UpgradeCost getCostShow() {
+<span class="fc" id="L87">        return cost_show;</span>
+    }
+
+    /**
+     * Retrieves all the Tower objects that have been purchased as a HashMap, where a Tower object maps to its x,y coordinates on the screen
+     * @return purchased_towers
+     */
+    public HashMap&lt;int[], Tower&gt; getPurchasedTowers() {
+<span class="fc" id="L95">        return purchased_towers;</span>
+    }
+
+    /**
+     * Retrieves the object's Mana instance
+     * @return mana
+     */
+    public Mana getMana() {
+<span class="fc" id="L103">        return mana;</span>
+    }
+
+    /**
+     * Retrieves the cost to purchase a tower with no upgrades
+     * @return tower_cost
+     */
+    public int getTowerCost() {
+<span class="fc" id="L111">        return tower_cost;</span>
+    }
+
+    /**
+     * Contains the logic for building new towers and upgrading purchased ones, depending on which buttons have been selected by the player and the current mouse position.
+     * Also executes the logic of each purchased tower object
+     * @param app that instantiates this class
+     * @param spawned_monsters all spawned monsters in the current wave
+     * @param ff FastForward object used to check if game has been fastforwarded
+     * @param p Pause object used to check if game has been paused
+     * @param wave Wave object used to retrieve the currently spawned monsters
+     */
+    public void tick(PApplet app, ArrayList&lt;Monsters&gt; spawned_monsters, FastForward ff, Pause p, Wave wave) {
+<span class="pc bpc" id="L124" title="1 of 4 branches missed.">        if (!mana.hasLost() &amp;&amp; !wave.hasWon()) {</span>
+<span class="fc" id="L125">            showCost(app, show_cost, tower_cost);</span>
+<span class="pc bpc" id="L126" title="1 of 8 branches missed.">            if (selected &amp;&amp; mouseClick(app, grass_tiles_coords) &amp;&amp; !mouseClick(app, purchased_towers.keySet()) &amp;&amp; (tower_cost &lt; mana.getCurrentMana())) {</span>
+                //build tower was selected
+<span class="fc" id="L128">                Tower new_tower = new Tower(json, tower_images, coords[0], coords[1], ball);</span>
+<span class="fc" id="L129">                new_tower.upgradeTower(mana, range, damage, speed);</span>
+<span class="fc" id="L130">                purchased_towers.put(coords, new_tower);</span>
+<span class="fc" id="L131">                mana.changeCurrentMana(-(tower_cost + new_tower.getCost()));</span>
+<span class="fc" id="L132">            }</span>
+<span class="pc bpc" id="L133" title="5 of 10 branches missed.">            else if (!selected &amp;&amp; mouseClick(app, purchased_towers.keySet()) &amp;&amp; (range.isSelected() || damage.isSelected() || speed.isSelected())) {</span>
+                //build tower not selected
+<span class="fc" id="L135">                Tower chosen_tower = purchased_towers.get(coords);</span>
+<span class="fc" id="L136">                chosen_tower.upgradeTower(mana, range, damage, speed);</span>
+<span class="fc" id="L137">                mana.changeCurrentMana(-chosen_tower.getCost());</span>
+            }
+
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            for (Tower tower : purchased_towers.values()) {</span>
+<span class="fc" id="L141">                tower.tick(app, cost_show, spawned_monsters, mana, ff, p);</span>
+<span class="fc" id="L142">            }</span>
+        }
+
+<span class="fc" id="L145">    }</span>
+
+    /**
+     * Renders the purchased towers onto the screen
+     * @param app that instantiates the class
+     */
+    public void draw(PApplet app) {
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        for (Tower tower : purchased_towers.values()) {</span>
+<span class="nc" id="L153">            tower.draw(app);</span>
+<span class="nc" id="L154">        }</span>
+<span class="fc" id="L155">    }</span>
+
+    /**
+     * Checks if the mouse has clicked a valid tile in Collection of x,y coordinates on the screen and sets the most recent coordinates to this.
+     * Used to check if mouse has clicked a grass tile or a purchased tower tile
+     * @param app that instantiates the class
+     * @return true if mouse has clicked a valid tile, false otherwise
+     */
+    private boolean mouseClick(PApplet app, Collection&lt;int[]&gt; all_coords) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (int[] coord : all_coords) {</span>
+<span class="pc bpc" id="L165" title="1 of 10 branches missed.">            if (mouseClicked &amp;&amp; (app.mouseX &gt;= coord[0] &amp;&amp; app.mouseX &lt;= (coord[0] + RetrieveValues.PIXELSPERTILE)) &amp;&amp; (app.mouseY &gt;= coord[1] &amp;&amp; app.mouseY &lt;= (coord[1] + RetrieveValues.PIXELSPERTILE))) {</span>
+<span class="fc" id="L166">                this.coords = coord;</span>
+<span class="fc" id="L167">                return true;</span>
+            }
+<span class="fc" id="L169">        }</span>
+<span class="fc" id="L170">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

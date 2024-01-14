@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.CostTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2023-10-27T12:50:29" hostname="LAPTOP-VNK73J89" time="8.213">
+  <properties/>
+  <testcase name="testTotalCostCalculationThreeUpgrades()" classname="WizardTD.CostTest" time="1.155"/>
+  <testcase name="testTotalCostCalculationTwoUpgrades()" classname="WizardTD.CostTest" time="1.188"/>
+  <testcase name="testTotalCostCalculationNegativeLevel()" classname="WizardTD.CostTest" time="1.175"/>
+  <testcase name="testTotalCostCalculationOneUpgrade()" classname="WizardTD.CostTest" time="1.16"/>
+  <testcase name="testConstruction()" classname="WizardTD.CostTest" time="0.003"/>
+  <testcase name="testUpgradeCostValueMultiplier()" classname="WizardTD.CostTest" time="0.003"/>
+  <testcase name="testCorrectBoxHeightThreeUpgrades()" classname="WizardTD.CostTest" time="1.159"/>
+  <testcase name="testCorrectBoxHeightTwoUpgrades()" classname="WizardTD.CostTest" time="1.181"/>
+  <testcase name="testCorrectBoxHeightOneUpgrade()" classname="WizardTD.CostTest" time="1.15"/>
+  <testcase name="testInitialUpgradeCostValue()" classname="WizardTD.CostTest" time="0.003"/>
+  <testcase name="testNegativeValueUpgradeLevel()" classname="WizardTD.CostTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

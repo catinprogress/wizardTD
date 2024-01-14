@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.ButtonsTest" tests="32" skipped="0" failures="0" errors="0" timestamp="2023-10-27T12:50:16" hostname="LAPTOP-VNK73J89" time="12.849">
+  <properties/>
+  <testcase name="testInvalidMouseCoords()" classname="WizardTD.ButtonsTest" time="1.128"/>
+  <testcase name="testMouseSelectAndKeyUnselect()" classname="WizardTD.ButtonsTest" time="1.14"/>
+  <testcase name="testUpgradeRangeSelected()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testSetSelected()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testFastForwardKey()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testManaPoolSpellSelected()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testMouseUnselect()" classname="WizardTD.ButtonsTest" time="1.129"/>
+  <testcase name="testUpgradeRangeKey()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testManaPoolSpellConstruction()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testKeyPressSelect()" classname="WizardTD.ButtonsTest" time="1.147"/>
+  <testcase name="testUpgradeDamageSelected()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testFastForwardConstruction()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testHoleSelected()" classname="WizardTD.ButtonsTest" time="1.134"/>
+  <testcase name="testBuildTowerSelected()" classname="WizardTD.ButtonsTest" time="1.184"/>
+  <testcase name="testMouseClicked()" classname="WizardTD.ButtonsTest" time="0.004"/>
+  <testcase name="testUpgradeDamagKey()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testUpgradeDamageConstruction()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testMouseSelect()" classname="WizardTD.ButtonsTest" time="1.175"/>
+  <testcase name="testUpgradeSpeedKey()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testUpgradeSpeedConstruction()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testBuildTowerKey()" classname="WizardTD.ButtonsTest" time="1.148"/>
+  <testcase name="testHoleKey()" classname="WizardTD.ButtonsTest" time="1.173"/>
+  <testcase name="testFastForwardSelected()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <testcase name="testUpgradeSpeedSelected()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testManaPoolSpellKey()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testPauseSelected()" classname="WizardTD.ButtonsTest" time="0.002"/>
+  <testcase name="testKeyPressUnselect()" classname="WizardTD.ButtonsTest" time="1.156"/>
+  <testcase name="testIncorrectKeyPress()" classname="WizardTD.ButtonsTest" time="1.175"/>
+  <testcase name="testSetKeyWasPressed()" classname="WizardTD.ButtonsTest" time="0.004"/>
+  <testcase name="testPauseConstruction()" classname="WizardTD.ButtonsTest" time="0.006"/>
+  <testcase name="testUpgradeRangeConstruction()" classname="WizardTD.ButtonsTest" time="0.004"/>
+  <testcase name="testPauseKey()" classname="WizardTD.ButtonsTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

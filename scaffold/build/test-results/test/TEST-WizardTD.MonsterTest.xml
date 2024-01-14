@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.MonsterTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2023-10-27T12:51:24" hostname="LAPTOP-VNK73J89" time="17.538">
+  <properties/>
+  <testcase name="testClone()" classname="WizardTD.MonsterTest" time="1.211"/>
+  <testcase name="testSpawn()" classname="WizardTD.MonsterTest" time="1.225"/>
+  <testcase name="testMove()" classname="WizardTD.MonsterTest" time="1.233"/>
+  <testcase name="testConstruction()" classname="WizardTD.MonsterTest" time="1.249"/>
+  <testcase name="testCorrectSpeed()" classname="WizardTD.MonsterTest" time="1.219"/>
+  <testcase name="testIsAliveWhenCreated()" classname="WizardTD.MonsterTest" time="1.342"/>
+  <testcase name="testCorrectHP()" classname="WizardTD.MonsterTest" time="1.271"/>
+  <testcase name="testAttackPositive()" classname="WizardTD.MonsterTest" time="1.413"/>
+  <testcase name="testAttackNegative()" classname="WizardTD.MonsterTest" time="1.136"/>
+  <testcase name="testQuantityAfterKill()" classname="WizardTD.MonsterTest" time="1.253"/>
+  <testcase name="testCorrectMana()" classname="WizardTD.MonsterTest" time="1.283"/>
+  <testcase name="testCorrectArmour()" classname="WizardTD.MonsterTest" time="1.153"/>
+  <testcase name="testKillWhenAlive()" classname="WizardTD.MonsterTest" time="1.28"/>
+  <testcase name="testCorrectQuantity()" classname="WizardTD.MonsterTest" time="1.233"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

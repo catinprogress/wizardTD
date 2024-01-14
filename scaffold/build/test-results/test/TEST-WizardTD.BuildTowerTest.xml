@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.BuildTowerTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2023-10-27T12:50:05" hostname="LAPTOP-VNK73J89" time="11.606">
+  <properties/>
+  <testcase name="testPurchaseTowerWhenNotSelected()" classname="WizardTD.BuildTowerTest" time="1.134"/>
+  <testcase name="testCreateNewTowerInvalidCoords()" classname="WizardTD.BuildTowerTest" time="1.161"/>
+  <testcase name="testConstruction()" classname="WizardTD.BuildTowerTest" time="1.181"/>
+  <testcase name="testUpgradeWhenBuildSelected()" classname="WizardTD.BuildTowerTest" time="1.181"/>
+  <testcase name="testCorrectTowerCost()" classname="WizardTD.BuildTowerTest" time="1.185"/>
+  <testcase name="testPurchasingTowerWithUpgrades()" classname="WizardTD.BuildTowerTest" time="1.14"/>
+  <testcase name="testUpgradePurchasedTowers()" classname="WizardTD.BuildTowerTest" time="1.136"/>
+  <testcase name="testPurchasingTowerCost()" classname="WizardTD.BuildTowerTest" time="1.154"/>
+  <testcase name="testCreateNewTower()" classname="WizardTD.BuildTowerTest" time="1.157"/>
+  <testcase name="testPurchasingTowerUsedLocation()" classname="WizardTD.BuildTowerTest" time="1.139"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

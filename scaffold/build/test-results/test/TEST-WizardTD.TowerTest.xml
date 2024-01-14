@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.TowerTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2023-10-27T12:51:42" hostname="LAPTOP-VNK73J89" time="239.33">
+  <properties/>
+  <testcase name="testCorrectCostRetrieved()" classname="WizardTD.TowerTest" time="1.308"/>
+  <testcase name="testAttackingKilledMonsters()" classname="WizardTD.TowerTest" time="45.315"/>
+  <testcase name="testConstruction()" classname="WizardTD.TowerTest" time="1.266"/>
+  <testcase name="testUnselectedRangeUpgradeLevel()" classname="WizardTD.TowerTest" time="1.238"/>
+  <testcase name="testCorrectRange()" classname="WizardTD.TowerTest" time="1.275"/>
+  <testcase name="testCorrectSpeed()" classname="WizardTD.TowerTest" time="1.264"/>
+  <testcase name="initialFireballsFired()" classname="WizardTD.TowerTest" time="1.254"/>
+  <testcase name="testUpgradeLevelDamage()" classname="WizardTD.TowerTest" time="1.26"/>
+  <testcase name="testRemovingFiredFireballs()" classname="WizardTD.TowerTest" time="52.91"/>
+  <testcase name="testUnselectedDamageUpgradeLevel()" classname="WizardTD.TowerTest" time="1.294"/>
+  <testcase name="testFastForwardSelected()" classname="WizardTD.TowerTest" time="1.25"/>
+  <testcase name="testFastForwardUnselected()" classname="WizardTD.TowerTest" time="1.4"/>
+  <testcase name="testAttackingAliveMonsters()" classname="WizardTD.TowerTest" time="56.258"/>
+  <testcase name="testCorrectDamage()" classname="WizardTD.TowerTest" time="1.313"/>
+  <testcase name="testUpgradeTowerLevel()" classname="WizardTD.TowerTest" time="1.422"/>
+  <testcase name="testCostRemainsZero()" classname="WizardTD.TowerTest" time="1.366"/>
+  <testcase name="testMultipleRangeUpgrades()" classname="WizardTD.TowerTest" time="1.37"/>
+  <testcase name="testUpgradeLevelRange()" classname="WizardTD.TowerTest" time="1.329"/>
+  <testcase name="testUpgradeLevelSpeed()" classname="WizardTD.TowerTest" time="1.509"/>
+  <testcase name="testFiringFireballs()" classname="WizardTD.TowerTest" time="60.77"/>
+  <testcase name="testMultipleTowerUpgrades()" classname="WizardTD.TowerTest" time="1.398"/>
+  <testcase name="testUnselectedSpeedUpgradeLevel()" classname="WizardTD.TowerTest" time="1.498"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

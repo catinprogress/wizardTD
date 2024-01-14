@@ -1,0 +1,31 @@
+{
+    "layout": "level1.txt",
+    "waves": [
+      {
+        "duration": 10,
+        "pre_wave_pause": 0.5,
+          "monsters": [
+          {
+            "type": "gremlin",
+            "hp": 85,
+            "speed": 1.25,
+            "armour": 0.7,
+            "mana_gained_on_kill": 15,
+            "quantity": 5
+          }
+        ]
+      }
+    ],
+    "initial_tower_range": 96,
+    "initial_tower_firing_speed": 1.75,
+    "initial_tower_damage": 45,
+    "initial_mana": 100,
+    "initial_mana_cap": 1200,
+    "initial_mana_gained_per_second": 2,
+    "tower_cost": 85,
+    "mana_pool_spell_initial_cost": 100,
+    "mana_pool_spell_cost_increase_per_use": 150,
+    "mana_pool_spell_cap_multiplier": 1.2,
+    "mana_pool_spell_mana_gained_multiplier": 1.1
+  }
+  

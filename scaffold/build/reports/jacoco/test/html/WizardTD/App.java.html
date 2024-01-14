@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONObject;
+import java.util.*;
+
+public class App extends PApplet {
+    public static final int CELLSIZE = 32;
+    public static final int SIDEBAR = 120;
+    public static final int TOPBAR = 40;
+    public static final int BOARD_WIDTH = 20;
+
+    public static final int WIDTH = CELLSIZE*BOARD_WIDTH+SIDEBAR;
+    public static final int HEIGHT = BOARD_WIDTH*CELLSIZE+TOPBAR;
+
+    public static final int FPS = 60;
+
+    protected String configPath;
+    protected JSONObject json;
+    protected Board board;
+    protected Wave wave;
+    protected PImage shrub;
+    protected PImage grass;
+    protected PImage wizard_house;
+    protected PImage horizontal_path;
+    protected PImage right_down_path;
+    protected PImage t_path;
+    protected PImage cross_path;
+    protected PImage gremlin;
+    protected PImage death_1;
+    protected PImage death_2;
+    protected PImage death_3;
+    protected PImage death_4;
+    protected PImage death_5;
+    protected PImage worm;
+    protected PImage beetle;
+    protected PImage tower_0;
+    protected PImage tower_1;
+    protected PImage tower_2;
+    protected PImage fireball;
+    protected PImage hole;
+    protected HashMap&lt;String, PImage&gt; monster_types;
+    protected Mana mana;
+    protected FastForward ff;
+    protected Pause p;
+    protected BuildTower b;
+    protected UpgradeRange u1;
+    protected UpgradeSpeed u2;
+    protected UpgradeDamage u3;
+    protected Hole h;
+    protected char last_key;
+
+<span class="fc" id="L54">    public App() {</span>
+<span class="fc" id="L55">        this.configPath = &quot;config.json&quot;;</span>
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * Initialise the setting of the window size.
+     */
+	@Override
+    public void settings() {
+<span class="fc" id="L63">        size(WIDTH, HEIGHT);</span>
+        
+<span class="fc" id="L65">    }</span>
+
+    /**
+     * Load all resources such as images. Initialise the elements such as the player, enemies and map elements.
+     */
+	@Override
+    public void setup() {
+<span class="fc" id="L72">        frameRate(FPS);</span>
+<span class="fc" id="L73">        this.json = loadJSONObject(configPath);</span>
+<span class="fc" id="L74">        this.grass = this.loadImage(&quot;src/main/resources/WizardTD/grass.png&quot;);</span>
+<span class="fc" id="L75">        this.shrub = this.loadImage(&quot;src/main/resources/WizardTD/shrub.png&quot;);</span>
+<span class="fc" id="L76">        this.wizard_house = this.loadImage(&quot;src/main/resources/WizardTD/wizard_house.png&quot;);</span>
+<span class="fc" id="L77">        this.horizontal_path = this.loadImage(&quot;src/main/resources/WizardTD/path0.png&quot;);</span>
+<span class="fc" id="L78">        this.right_down_path = this.loadImage(&quot;src/main/resources/WizardTD/path1.png&quot;);</span>
+<span class="fc" id="L79">        this.t_path = this.loadImage(&quot;src/main/resources/WizardTD/path2.png&quot;);</span>
+<span class="fc" id="L80">        this.cross_path = this.loadImage(&quot;src/main/resources/WizardTD/path3.png&quot;);</span>
+<span class="fc" id="L81">        this.gremlin = this.loadImage(&quot;src/main/resources/WizardTD/gremlin.png&quot;);</span>
+<span class="fc" id="L82">        this.beetle = this.loadImage(&quot;src/main/resources/WizardTD/beetle.png&quot;);</span>
+<span class="fc" id="L83">        this.worm = this.loadImage(&quot;src/main/resources/WizardTD/worm.png&quot;);</span>
+<span class="fc" id="L84">        this.death_1 = this.loadImage(&quot;src/main/resources/WizardTD/gremlin1.png&quot;);</span>
+<span class="fc" id="L85">        this.death_2 = this.loadImage(&quot;src/main/resources/WizardTD/gremlin2.png&quot;);</span>
+<span class="fc" id="L86">        this.death_3 = this.loadImage(&quot;src/main/resources/WizardTD/gremlin3.png&quot;);</span>
+<span class="fc" id="L87">        this.death_4 = this.loadImage(&quot;src/main/resources/WizardTD/gremlin4.png&quot;);</span>
+<span class="fc" id="L88">        this.death_5 = this.loadImage(&quot;src/main/resources/WizardTD/gremlin5.png&quot;);</span>
+<span class="fc" id="L89">        this.tower_0 = this.loadImage(&quot;src/main/resources/WizardTD/tower0.png&quot;);</span>
+<span class="fc" id="L90">        this.tower_1 = this.loadImage(&quot;src/main/resources/WizardTD/tower1.png&quot;);</span>
+<span class="fc" id="L91">        this.tower_2 = this.loadImage(&quot;src/main/resources/WizardTD/tower2.png&quot;);</span>
+<span class="fc" id="L92">        this.fireball = this.loadImage(&quot;src/main/resources/WizardTD/fireball.png&quot;);</span>
+<span class="fc" id="L93">        this.hole = this.loadImage(&quot;src/main/resources/WizardTD/hole.png&quot;);</span>
+
+<span class="fc" id="L95">        monster_types = new HashMap&lt;String, PImage&gt;();</span>
+<span class="fc" id="L96">        monster_types.put(&quot;gremlin&quot;, gremlin);</span>
+<span class="fc" id="L97">        monster_types.put(&quot;beetle&quot;, beetle);</span>
+<span class="fc" id="L98">        monster_types.put(&quot;worm&quot;, worm);</span>
+    
+<span class="fc" id="L100">        this.board = new Board(this, grass, shrub, horizontal_path, right_down_path, cross_path, t_path, wizard_house, json, HEIGHT);</span>
+<span class="fc" id="L101">        this.mana = new Mana(json);</span>
+        
+<span class="fc" id="L103">        this.p = new Pause();  </span>
+<span class="fc" id="L104">        this.wave = new Wave(mana, json, board, monster_types, death_1, death_2, death_3, death_4, death_5);</span>
+<span class="fc" id="L105">        this.ff = new FastForward();</span>
+<span class="fc" id="L106">        this.u1 = new UpgradeRange();</span>
+<span class="fc" id="L107">        this.u2 = new UpgradeSpeed();</span>
+<span class="fc" id="L108">        this.u3 = new UpgradeDamage();</span>
+<span class="fc" id="L109">        this.b = new BuildTower(mana, json, u1, u2, u3, tower_0, tower_1, tower_2, board, fireball);</span>
+<span class="fc" id="L110">        this.h = new Hole(hole, board);</span>
+<span class="fc" id="L111">    }</span>
+
+
+    /**
+     * Receive key pressed signal from the keyboard.
+     */
+    @Override
+    public void keyPressed(){
+<span class="fc" id="L119">        GameplayActions.setKeyWasPressed(true);</span>
+<span class="pc bpc" id="L120" title="3 of 6 branches missed.">        if (key == 'r' &amp;&amp; (mana.hasLost() || wave.hasWon())) { //restart game </span>
+<span class="fc" id="L121">            this.board = new Board(this, grass, shrub, horizontal_path, right_down_path, cross_path, t_path, wizard_house, json, HEIGHT);</span>
+<span class="fc" id="L122">            this.mana = new Mana(json);</span>
+<span class="fc" id="L123">            this.p = new Pause();  </span>
+<span class="fc" id="L124">            this.wave = new Wave(mana, json, board, monster_types, death_1, death_2, death_3, death_4, death_5);</span>
+<span class="fc" id="L125">            this.ff = new FastForward();</span>
+<span class="fc" id="L126">            this.u1 = new UpgradeRange();</span>
+<span class="fc" id="L127">            this.u2 = new UpgradeSpeed();</span>
+<span class="fc" id="L128">            this.u3 = new UpgradeDamage();</span>
+<span class="fc" id="L129">            this.b = new BuildTower(mana, json, u1, u2, u3, tower_0, tower_1, tower_2, board, fireball);</span>
+<span class="fc" id="L130">            this.h = new Hole(hole, board);</span>
+        }
+<span class="fc" id="L132">    }</span>
+
+    /**
+     * Receive key released signal from the keyboard.
+     */
+	@Override
+    public void keyReleased(){
+        
+<span class="fc" id="L140">    }</span>
+    
+    @Override
+    public void mouseClicked() {
+<span class="fc" id="L144">        ff.setMouseClicked();</span>
+<span class="fc" id="L145">        p.setMouseClicked();</span>
+<span class="fc" id="L146">        b.setMouseClicked();</span>
+<span class="fc" id="L147">        u1.setMouseClicked();</span>
+<span class="fc" id="L148">        u2.setMouseClicked();</span>
+<span class="fc" id="L149">        u3.setMouseClicked();</span>
+<span class="fc" id="L150">        mana.getManaPoolSpell().setMouseClicked();</span>
+<span class="fc" id="L151">        h.setMouseClicked();</span>
+<span class="fc" id="L152">    }</span>
+
+    /**
+     * Draw all elements in the game by current frame.
+     */
+	@Override
+    public void draw() {
+<span class="fc" id="L159">        this.background(130, 116, 79); </span>
+<span class="fc" id="L160">        this.board.draw(this);</span>
+<span class="fc" id="L161">        this.mana.tick(this, p, ff, wave);</span>
+<span class="fc" id="L162">        this.h.draw(this);</span>
+<span class="fc" id="L163">        this.wave.tick(this, p, ff);</span>
+  
+<span class="fc" id="L165">        this.board.drawWizard(this);</span>
+<span class="fc" id="L166">        this.b.tick(this, wave.getSpawnedMonsters(), ff, p, wave);</span>
+<span class="fc" id="L167">        this.b.draw(this);  </span>
+<span class="fc" id="L168">        this.h.tick(this, mana, wave, ff);</span>
+        
+<span class="fc" id="L170">        this.mana.draw(this, wave);</span>
+<span class="fc" id="L171">        this.b.drawButtons(this, mana, wave);</span>
+<span class="fc" id="L172">        this.ff.drawButtons(this, mana, wave);</span>
+<span class="fc" id="L173">        this.p.drawButtons(this, mana, wave);</span>
+<span class="fc" id="L174">        this.u1.drawButtons(this, mana, wave);</span>
+<span class="fc" id="L175">        this.u2.drawButtons(this, mana, wave);</span>
+<span class="fc" id="L176">        this.u3.drawButtons(this, mana, wave);</span>
+<span class="fc" id="L177">        this.h.drawButtons(this, mana, wave);</span>
+<span class="fc" id="L178">        this.h.deselect(this);</span>
+             
+<span class="fc" id="L180">        this.wave.draw(this);</span>
+<span class="fc" id="L181">        this.wave.displayWin(this);</span>
+<span class="fc" id="L182">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L185">        PApplet.main(&quot;WizardTD.App&quot;);</span>
+<span class="nc" id="L186">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

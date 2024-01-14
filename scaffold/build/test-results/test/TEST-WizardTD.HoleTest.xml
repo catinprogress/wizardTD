@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WizardTD.HoleTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2023-10-27T12:50:53" hostname="LAPTOP-VNK73J89" time="18.873">
+  <properties/>
+  <testcase name="testHolePlacedReset()" classname="WizardTD.HoleTest" time="1.187"/>
+  <testcase name="testMonsterKill()" classname="WizardTD.HoleTest" time="14.013"/>
+  <testcase name="testHolePlacedTime()" classname="WizardTD.HoleTest" time="1.21"/>
+  <testcase name="testHoleConstruction()" classname="WizardTD.HoleTest" time="1.207"/>
+  <testcase name="testNewHolePlaced()" classname="WizardTD.HoleTest" time="1.239"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

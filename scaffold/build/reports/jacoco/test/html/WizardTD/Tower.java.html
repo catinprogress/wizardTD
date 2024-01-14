@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tower.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">scaffold</a> &gt; <a href="index.source.html" class="el_package">WizardTD</a> &gt; <span class="el_source">Tower.java</span></div><h1>Tower.java</h1><pre class="source lang-java linenums">package WizardTD;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONObject;
+
+import java.util.HashMap;
+import java.util.Random;
+import java.util.ArrayList;
+
+public class Tower implements RetrieveValues {
+    private PImage tower;
+    private HashMap&lt;Integer, PImage&gt; tower_images;
+    
+    private int tower_level;
+    private int range_level;
+    private int damage_level;
+    private int speed_level;
+   
+    private int x;
+    private int y;
+    private int cost;
+    
+    private double initial_damage;
+    private double current_radius;
+    private double current_damage;
+    private double current_speed;
+    
+    private boolean speed_up;
+    
+    private PImage ball;
+    private ArrayList&lt;Fireball&gt; to_remove; //fireballs that have reached their target and need to be removed
+    private HashMap&lt;Fireball, Monsters&gt; fireballs; //maps monster object to a fireball
+    private ArrayList&lt;Fireball&gt; to_fire; //fireballs to be fired
+    private ArrayList&lt;Fireball&gt; fired; //fireballs that have been fired
+
+    private Random random;
+
+<span class="fc" id="L39">    public Tower(JSONObject json, HashMap&lt;Integer, PImage&gt; tower_images, int x, int y, PImage ball) {</span>
+<span class="fc" id="L40">        this.tower_images = tower_images;  </span>
+<span class="fc" id="L41">        this.tower = tower_images.get(1);      </span>
+<span class="fc" id="L42">        range_level = 0;</span>
+<span class="fc" id="L43">        damage_level = 0;</span>
+<span class="fc" id="L44">        speed_level = 0;</span>
+<span class="fc" id="L45">        this.ball = ball;</span>
+<span class="fc" id="L46">        speed_up = false;</span>
+
+<span class="fc" id="L48">        current_radius = getNumericAmount(&quot;initial_tower_range&quot;, json);</span>
+<span class="fc" id="L49">        current_speed = getNumericAmount(&quot;initial_tower_firing_speed&quot;, json);</span>
+<span class="fc" id="L50">        initial_damage = getNumericAmount(&quot;initial_tower_damage&quot;, json);</span>
+<span class="fc" id="L51">        current_damage = initial_damage;</span>
+
+<span class="fc" id="L53">        tower_level = 1;</span>
+<span class="fc" id="L54">        fireballs = new HashMap&lt;Fireball, Monsters&gt;();</span>
+<span class="fc" id="L55">        to_remove = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L56">        to_fire = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L57">        fired = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L59">        cost = 0;</span>
+
+<span class="pc bpc" id="L61" title="2 of 4 branches missed.">        if (x &gt;= 0 &amp;&amp; x &lt;= 640) {</span>
+<span class="fc" id="L62">            this.x = x;</span>
+        }
+        else {
+<span class="nc" id="L65">            this.x = 0;</span>
+        }
+
+<span class="pc bpc" id="L68" title="1 of 4 branches missed.">        if (y &gt;= 40 &amp;&amp; y &lt;= 680) {</span>
+<span class="fc" id="L69">            this.y = y;</span>
+        }
+        else {
+<span class="fc" id="L72">            this.y = 40;</span>
+        }
+<span class="fc" id="L74">        random = new Random();</span>
+        
+<span class="fc" id="L76">    }</span>
+    
+    /**
+     * Retrieves the tower's current range level
+     * @return range_level
+     */
+    public int getRangeLevel() {
+<span class="fc" id="L83">        return range_level;</span>
+    }
+
+    /**
+     * Retrieves the tower's current radius of its firing range
+     * @return current_radius
+     */
+    public double getRadius() {
+<span class="fc" id="L91">        return current_radius;</span>
+    }
+
+    /**
+     * Retrieves the current speed at which the tower shoots fireballs
+     * @return current_speed
+     */
+    public double getSpeed() {
+<span class="fc" id="L99">        return current_speed;</span>
+    }
+
+    /**
+     * Retrieves the current damage that a fireball can inflict on a monster
+     * @return current_damage
+     */
+    public double getDamage() {
+<span class="fc" id="L107">        return current_damage;</span>
+    }
+    
+    /**
+     * Retrieves the tower's current damage level
+     * @return damage_level
+     */
+    public int getDamageLevel() {
+<span class="fc" id="L115">        return damage_level;</span>
+    }
+
+    /**
+     * Retrieves the tower's current speed level
+     * @return speed_level
+     */
+    public int getSpeedLevel() {
+<span class="fc" id="L123">        return speed_level;</span>
+    }
+
+    /**
+     * Retrieves the next tower level that the tower can be upgraded to once the range, speed and damage all upgrade to at least this value
+     * @return tower_level
+     */
+    public int getTowerLevel() {
+<span class="fc" id="L131">        return tower_level;</span>
+    }
+
+    /**
+     * Retrieves all the Fireball objects that have been fired at a monster that is within range as an ArrayList
+     * @return to_fire
+     */
+    public ArrayList&lt;Fireball&gt; getFireballsFired() {
+<span class="fc" id="L139">        return fired;</span>
+    }
+
+    /**
+     * Retrieves all the Fireball objects and the Monsters object that they are targeted to attack as a hashmap.
+     * key: Fireball object to fire, value: Monster object to attack
+     * @return fireballs
+     */
+    public HashMap&lt;Fireball, Monsters&gt; getFireballs() {
+<span class="fc" id="L148">        return fireballs;</span>
+    }
+    /**
+     * Increases the current range level and radius by 32
+     */
+    private void upgradeRange() {
+<span class="fc" id="L154">        range_level++;</span>
+<span class="fc" id="L155">        current_radius += UpgradeRange.RANGE_RADIUS_UPGRADE;</span>
+<span class="fc" id="L156">    }</span>
+    
+    /**
+     * Increases the current damage level and damage inflicted by 1/2 of initial tower damage
+     */
+    private void upgradeDamage() {
+<span class="fc" id="L162">        damage_level++;</span>
+<span class="fc" id="L163">        current_damage += UpgradeDamage.DAMAGE_MULTIPLIER_UPGRADE*initial_damage;</span>
+<span class="fc" id="L164">    }</span>
+
+    /**
+     * Increases the current speed level and current firing speed by 1/2 the towers current firing speed
+     */
+    private void upgradeSpeed() {
+<span class="fc" id="L170">        speed_level++;</span>
+<span class="fc" id="L171">        current_speed = UpgradeSpeed.FIRING_SPEED_UPGRADE*current_speed;</span>
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * Renders purple circles at the top of the tower to indicate the current range level. Once all upgrades have been increased to this level, the purple circles disappear until the range is upgraded again
+     * @param app that invokes this object
+     */
+    private void showRangeLevel(PApplet app) {
+<span class="nc" id="L179">        app.noFill();</span>
+<span class="nc" id="L180">        app.strokeWeight(1);</span>
+<span class="nc" id="L181">        app.stroke(219, 54, 231);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (range_level &gt;= tower_level) {</span>
+<span class="nc" id="L183">            int begin = tower_level-1;</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">            for (int i = begin; i &lt; range_level; i++) {</span>
+<span class="nc" id="L185">                app.ellipse(x+3+(6*i), y+3, 6, 6);</span>
+            }
+        }
+<span class="nc" id="L188">    }</span>
+
+    /**
+     * Renders purple cross at the bottom of the tower to indicate the current damage level. Once all upgrades have been increased to this level, the purple crosses disappear until the damage is upgraded again
+     * @param app that invokes this object
+     */
+    private void showDamageLevel(PApplet app) {
+<span class="nc" id="L195">        app.strokeWeight(1);</span>
+<span class="nc" id="L196">        app.stroke(219, 54, 231);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (damage_level &gt;= tower_level) {</span>
+<span class="nc" id="L198">            int begin = tower_level-1;</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            for (int i = begin; i &lt; damage_level; i++) {</span>
+<span class="nc" id="L200">                app.line(x + (i*6), y+24, x + ((i+1)*6), y+30);</span>
+<span class="nc" id="L201">                app.line(x + ((i+1)*6), y+24, x + (i*6), y+30);</span>
+            }
+        }
+<span class="nc" id="L204">    }</span>
+    
+    /**
+     * Outlines a blue square around the tower where the thickness of the outline indicates the current speed level. Once all upgrades have been increased to this level, the square outline disappears until the speed is upgraded again
+     * @param app that invokes this object
+     */
+    private void showSpeedLevel(PApplet app) {  
+<span class="nc" id="L211">        app.stroke(136, 179, 249);</span>
+<span class="nc" id="L212">        app.strokeWeight(speed_level);</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">        if (speed_level &gt;= tower_level) {</span>
+<span class="nc" id="L214">            app.rect(x+4, y+4, 24, 24);</span>
+        }
+<span class="nc" id="L216">    }</span>
+
+    /**
+     * Renders a yellow circle outline around the tower that indicates the current range of the tower's fireballs.
+     * @param app
+     */
+    private void showRadius(PApplet app) {
+<span class="fc" id="L223">        app.noFill();</span>
+<span class="fc" id="L224">        app.strokeWeight(1);</span>
+<span class="fc" id="L225">        app.stroke(GameplayActions.CLICKED[0], GameplayActions.CLICKED[1], GameplayActions.CLICKED[2]);</span>
+<span class="fc" id="L226">        app.ellipse(x+UpgradeRange.CENTRE_OFFSET, y+UpgradeRange.CENTRE_OFFSET, (float)current_radius*2, (float)current_radius*2);</span>
+<span class="fc" id="L227">    }</span>
+    
+    /**
+     * Allows the user to increase the next tower level to upgrade to if the range, speed and damage have all been upgraded to the current tower level value.
+     */
+    private void increaseTowerLevel() {
+<span class="fc bfc" id="L233" title="All 6 branches covered.">        if (range_level &gt;= tower_level &amp;&amp; speed_level &gt;= tower_level &amp;&amp; damage_level &gt;= tower_level) {</span>
+<span class="fc" id="L234">            tower_level++;</span>
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">            if (tower_level &lt;= 3) {</span>
+<span class="fc" id="L236">                tower = tower_images.get(tower_level);</span>
+            }
+        }
+<span class="fc" id="L239">    }</span>
+
+    /**
+     * Retrieves the x coordinate of the tower on screen according to the position of left edge of the tower image
+     * @return x
+     */
+    public int getX() {
+<span class="nc" id="L246">        return x;</span>
+    }
+
+    /**
+     * Retrieves the y coordinate of the tower on screen according to the position of the top edge fo the tower image
+     * @return y
+     */
+    public int getY() {
+<span class="nc" id="L254">        return y;</span>
+    }
+
+    /**
+     * Retrieves the cost value of the selected upgrades
+     * @return cost
+     */
+    public int getCost() {
+<span class="fc" id="L262">        return cost;</span>
+    }
+    
+    /**
+     * Checks whether the mouse is positioned over the current tower object
+     * @param app that invokes this object
+     * @return true if mouse is at the tower location, false otherwise
+     */
+    private boolean mouseHover(PApplet app) {
+<span class="pc bpc" id="L271" title="3 of 8 branches missed.">        if ((app.mouseX &gt;= x &amp;&amp; app.mouseX &lt;= x+WaveElements.PIXELSPERTILE) &amp;&amp; (app.mouseY &gt;= y &amp;&amp; app.mouseY &lt;= y+WaveElements.PIXELSPERTILE)) {</span>
+<span class="fc" id="L272">            return true;</span>
+        }
+        else {
+<span class="fc" id="L275">            return false;</span>
+        }
+    }
+
+    /**
+     * Logic for showing the current firing range of the tower on screen when the mouse hovers over the tower image, and shooting fireballs at the correct speed when monsters are within range
+     * @param app that invokes this object
+     * @param cost_show UpgradeCost object used to show the cost of upgrades selected
+     * @param spawned_monsters ArrayList of monsters that have been spawned in the current wave
+     * @param mana Mana object used to decrease the current mana after a monster is killed by a fireball
+     * @param ff FastForward object used to increase firing speed when fast forward is selected
+     * @param p Pause object used to stop firing fireballs when pause is selected
+     */
+    public void tick(PApplet app, UpgradeCost cost_show, ArrayList&lt;Monsters&gt; spawned_monsters, Mana mana, FastForward ff, Pause p) {
+<span class="pc bpc" id="L289" title="1 of 4 branches missed.">        if (mouseHover(app) &amp;&amp; !app.mousePressed) { //if mouse is hovering over tower, show upgrade cost and range radius </span>
+<span class="fc" id="L290">            showRadius(app);</span>
+            
+<span class="fc" id="L292">            app.noStroke(); //fill in topbar and sidebar after radius of tower is shown</span>
+<span class="fc" id="L293">            app.fill(130, 116, 79);</span>
+<span class="fc" id="L294">            app.rect(0, 0, App.WIDTH, App.TOPBAR);</span>
+<span class="fc" id="L295">            app.rect(640, 0, App.SIDEBAR, App.HEIGHT);</span>
+            
+<span class="fc" id="L297">            cost_show.tick(app, range_level, damage_level, speed_level);</span>
+        }
+
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        if (!p.isSelected()) { //if not paused, shoot fireballs</span>
+<span class="pc bpc" id="L301" title="1 of 4 branches missed.">            if (ff.isSelected() &amp;&amp; !speed_up) {</span>
+<span class="fc" id="L302">                current_speed = 2*current_speed;</span>
+<span class="fc" id="L303">                speed_up = true;</span>
+            }
+<span class="pc bpc" id="L305" title="1 of 4 branches missed.">            else if (!ff.isSelected() &amp;&amp; speed_up) {</span>
+<span class="fc" id="L306">                current_speed = current_speed/2;</span>
+<span class="fc" id="L307">                speed_up = false;</span>
+            }
+            
+<span class="fc bfc" id="L310" title="All 2 branches covered.">            if (app.frameCount%((int)Math.round(WaveElements.FPS/current_speed)) == 0) { //check that fireballs are being shot at the correct speed</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">                for (Monsters monster : spawned_monsters) {</span>
+<span class="fc" id="L312">                    double distance = findDistanceBetweenTwoPoints(x + UpgradeRange.CENTRE_OFFSET, y + UpgradeRange.CENTRE_OFFSET, monster.getX() + Monsters.DIMENSIONS/2, monster.getY() + Monsters.DIMENSIONS/2);</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">                    if (distance &lt;= current_radius) {//if monster is in tower range, create a fireball object to to fire</span>
+<span class="fc" id="L314">                        Fireball fireball = new Fireball(x + UpgradeRange.CENTRE_OFFSET, y + UpgradeRange.CENTRE_OFFSET, monster.getX() + Monsters.DIMENSIONS/2, monster.getY() + Monsters.DIMENSIONS/2, ball);</span>
+<span class="fc" id="L315">                        fireballs.put(fireball, monster);</span>
+<span class="fc" id="L316">                        to_fire.add(fireball);</span>
+<span class="fc" id="L317">                        break;</span>
+                    }
+<span class="nc" id="L319">                }</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">                if (to_fire.size() &gt; 0) { //choose an aribitrary monster to shoot at</span>
+<span class="fc" id="L321">                    int index = random.nextInt(to_fire.size());</span>
+<span class="fc" id="L322">                    Fireball current = to_fire.get(index);</span>
+<span class="fc" id="L323">                    fired.add(current);</span>
+<span class="fc" id="L324">                    to_fire.remove(current);</span>
+                }
+            }
+            
+<span class="fc bfc" id="L328" title="All 2 branches covered.">            for ( Fireball chosen : fired ) { //iterate through fireballs that have been fired</span>
+<span class="fc" id="L329">                chosen.tick(app, ff);</span>
+<span class="fc" id="L330">                Monsters to_kill = fireballs.get(chosen);  </span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">                if (!chosen.targetReached()) {</span>
+<span class="fc" id="L332">                    chosen.fire();</span>
+                }
+                else {
+<span class="fc" id="L335">                    chosen.disappear();</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">                    if (!to_kill.isAlive()) {</span>
+<span class="fc" id="L337">                        mana.changeCurrentMana(to_kill.getManaGained()*mana.getManaMultiplier());</span>
+                    }
+                    else {
+<span class="fc" id="L340">                        to_kill.attack(current_damage);</span>
+                    } 
+<span class="fc" id="L342">                    to_remove.add(chosen);</span>
+                }
+<span class="fc" id="L344">                chosen.draw(app);</span>
+<span class="fc" id="L345">            }</span>
+
+<span class="fc bfc" id="L347" title="All 2 branches covered.">            for (Fireball remove : to_remove) { //remove fireballs who've reached their target</span>
+<span class="fc" id="L348">               fired.remove(remove);</span>
+<span class="fc" id="L349">               fireballs.remove(remove, fireballs.get(remove));</span>
+<span class="fc" id="L350">            }</span>
+                     
+            }                 
+<span class="fc" id="L353">        }</span>
+    
+    /**
+     * Renders the tower on screen and the respective range, damage and speed level indicators
+     * @param app that invokes this object
+     */
+    public void draw(PApplet app) {
+<span class="nc" id="L360">        app.image(tower, x, y);</span>
+
+<span class="nc" id="L362">        showRangeLevel(app);</span>
+<span class="nc" id="L363">        showDamageLevel(app);</span>
+<span class="nc" id="L364">        showSpeedLevel(app);</span>
+<span class="nc" id="L365">    }</span>
+
+    /**
+     * Logic for upgrading the tower when the player has enough mana for the next level they wish to upgrade to. The player can only purchase as many upgrades as they have mana, but they cannot purchase upgrades to deliberately lose the game.
+     * @param mana Mana object used to check if wizard has enough mana for a purchase
+     * @param range UpgradeRange pbject used to check if range option was selected
+     * @param damage UpgradeDamage object used to check if damage option was selected
+     * @param speed UpgradeSpeed object used to check if speed option was selected
+     */
+    public void upgradeTower(Mana mana, UpgradeRange range, UpgradeDamage damage, UpgradeSpeed speed) {
+<span class="fc" id="L375">        cost = 0;</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">        if (range.isSelected()) {</span>
+<span class="fc" id="L377">            int range_cost = UpgradeCost.getUpgradeCost(range_level);</span>
+<span class="pc bpc" id="L378" title="1 of 2 branches missed.">            if (mana.getCurrentMana() &gt; range_cost) {</span>
+<span class="fc" id="L379">                cost += range_cost;</span>
+<span class="fc" id="L380">                upgradeRange();</span>
+            }
+        }
+<span class="fc bfc" id="L383" title="All 2 branches covered.">        if (speed.isSelected()) {</span>
+<span class="fc" id="L384">            int speed_cost = UpgradeCost.getUpgradeCost(speed_level); </span>
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">            if (mana.getCurrentMana() &gt; (cost + speed_cost)) {</span>
+<span class="fc" id="L386">                cost += speed_cost;</span>
+<span class="fc" id="L387">                upgradeSpeed();</span>
+            }
+        }
+<span class="fc bfc" id="L390" title="All 2 branches covered.">        if (damage.isSelected()) {</span>
+<span class="fc" id="L391">            int damage_cost = UpgradeCost.getUpgradeCost(damage_level);</span>
+<span class="pc bpc" id="L392" title="1 of 2 branches missed.">            if (mana.getCurrentMana() &gt; (cost + damage_cost)) {</span>
+<span class="fc" id="L393">                cost += damage_cost;</span>
+<span class="fc" id="L394">                upgradeDamage();</span>
+            }
+        }
+<span class="fc" id="L397">        increaseTowerLevel(); </span>
+<span class="fc" id="L398">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
